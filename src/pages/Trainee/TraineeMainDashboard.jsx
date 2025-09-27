@@ -245,10 +245,6 @@ const TraineeMainDashboard = () => {
     // Close the view popup if it's open
     setShowViewPopup(false);
     
-    // console.log('=== EDIT DAY PLAN DEBUG START ===');
-    // console.log('Original plan received:', plan);
-    // console.log('Plan tasks:', plan.tasks);
-    // console.log('Plan checkboxes:', plan.checkboxes);
     
     // Ensure tasks have proper IDs for checkbox mapping
     const tasksWithIds = plan.tasks.map((task, index) => {
@@ -257,11 +253,9 @@ const TraineeMainDashboard = () => {
         ...task,
         id: task.id || `task_${Date.now()}_${index}` // Generate ID if missing
       };
-      console.log(`Task ${index}:`, { original: task, withId: taskWithId });
       return taskWithId;
     });
     
-   // console.log('Tasks with IDs:', tasksWithIds);
     
     // Load the plan data into the form for editing
     setDayPlan({
@@ -273,8 +267,6 @@ const TraineeMainDashboard = () => {
     // Map checkboxes to use the task IDs
     const mappedCheckboxes = {};
     if (plan.checkboxes) {
-      // console.log('Original checkboxes structure:', plan.checkboxes);
-      // console.log('Available checkbox keys:', Object.keys(plan.checkboxes));
       
       // For each task, map its checkboxes using the task ID
       tasksWithIds.forEach((task, index) => {
@@ -288,12 +280,10 @@ const TraineeMainDashboard = () => {
           index               // Task index as number (e.g., 0)
         ];
         
-      //  console.log(`Task ${index} (ID: ${taskId}): Trying possible keys:`, possibleKeys);
         
         let found = false;
         for (const key of possibleKeys) {
           if (plan.checkboxes[key]) {
-           // console.log(`Found checkboxes for task ${index} with key "${key}", mapping to task ID: ${taskId}`);
             mappedCheckboxes[taskId] = plan.checkboxes[key];
             found = true;
             break;
@@ -301,13 +291,10 @@ const TraineeMainDashboard = () => {
         }
         
         if (!found) {
-          console.log(`No checkboxes found for task ${index} with any key`);
         }
       });
     }
     
-    // console.log('Final mapped checkboxes before setting:', mappedCheckboxes);
-    // console.log('Mapped checkbox keys:', Object.keys(mappedCheckboxes));
     
     setDynamicCheckboxes(mappedCheckboxes);
     
@@ -317,14 +304,9 @@ const TraineeMainDashboard = () => {
     // Remove the plan from submitted plans since we're editing it
     setSubmittedDayPlans(prev => prev.filter(p => p.id !== plan.id));
     
-    // console.log('Edit day plan - Original plan:', plan);
-    // console.log('Edit day plan - Tasks with IDs:', tasksWithIds);
-    // console.log('Edit day plan - Mapped checkboxes:', mappedCheckboxes);
-    // console.log('=== EDIT DAY PLAN DEBUG END ===');
     
     // Add a small delay to check if dynamicCheckboxes state is updated
     setTimeout(() => {
-      console.log('Dynamic checkboxes state after setting:', dynamicCheckboxes);
     }, 100);
     
     toast.success('Day plan loaded for editing');
@@ -543,7 +525,6 @@ const TraineeMainDashboard = () => {
         overallRemarks: eodStatus.remarks
       };
       
-      //console.log("Sending EOD update request:", requestData);
       
       const response = await axiosInstance.post('/api/trainee-dayplans/eod-update', requestData);
 
@@ -645,14 +626,8 @@ const TraineeMainDashboard = () => {
                 
                 {/* Display checkboxes for this task */}
                 {(() => {
-                  // console.log(`=== CHECKBOX RENDERING DEBUG ===`);
-                  // console.log(`Task ID: ${task.id}`);
-                  // console.log(`Dynamic checkboxes keys:`, Object.keys(dynamicCheckboxes));
-                  // console.log(`Dynamic checkboxes for task ${task.id}:`, dynamicCheckboxes[task.id]);
-                  // console.log(`All dynamic checkboxes:`, dynamicCheckboxes);
                   
                   if (!dynamicCheckboxes[task.id] || Object.keys(dynamicCheckboxes[task.id]).length === 0) {
-                   // console.log(`No checkboxes found for task ${task.id}`);
                     return (
                       <div className="text-sm text-gray-500 italic mb-3">
                         No checkboxes added for this task
@@ -851,9 +826,6 @@ const TraineeMainDashboard = () => {
           );
           
           // Debug logging
-          // console.log('All submitted day plans:', submittedDayPlans);
-          // console.log('Today\'s plans:', todayPlans);
-          // console.log('Today\'s date:', moment().format('YYYY-MM-DD'));
           
           return todayPlans.length > 0 ? (
             <div className="space-y-6">
@@ -864,21 +836,21 @@ const TraineeMainDashboard = () => {
                       <div className="p-3 bg-white rounded-lg shadow-sm">
                         <LuCalendar className="w-5 h-5 text-blue-600" />
                       </div>
-                      <div>
+                    <div>
                         <h3 className="font-semibold text-gray-900 text-lg">
                           {todayPlans.length > 1 ? `Task Set ${planIndex + 1}` : 'Assigned Tasks'}
-                        </h3>
+                      </h3>
                         <p className="text-sm text-gray-600">
                           {moment(plan.date).format('MMM DD, YYYY')} • {plan.tasks.length} task{plan.tasks.length !== 1 ? 's' : ''}
-                        </p>
-                      </div>
+                      </p>
+                    </div>
                     </div>
                     <div className="flex items-center space-x-3">
                       <span className="px-4 py-2 text-sm font-medium rounded-full bg-blue-100 text-blue-700 border border-blue-200">
                         Ready for Updates
-                      </span>
+                    </span>
                     </div>
-                  </div>
+              </div>
               
                   {/* Tasks from Day Plan */}
                   <div className="space-y-4">
@@ -926,8 +898,8 @@ const TraineeMainDashboard = () => {
                               {!isEodApproved && (
                                 <div className="p-2 bg-gray-100 rounded-lg">
                                   <span className="text-gray-500 text-sm">
-                                    {isExpanded ? '▼' : '▶'}
-                                  </span>
+                                  {isExpanded ? '▼' : '▶'}
+                                </span>
                                 </div>
                               )}
                             </div>
@@ -944,39 +916,39 @@ const TraineeMainDashboard = () => {
                                 {/* Editable radio buttons - only show if not approved */}
                                 {!isEodApproved ? (
                                   <>
-                                    <label className="flex items-center space-x-2">
-                                      <input 
-                                        type="radio" 
-                                        name={`status-${plan.id}-${index}`} 
-                                        value="completed" 
-                                        className="text-green-500"
-                                        checked={currentStatus === 'completed'}
-                                        onChange={() => handleTaskStatusChange(plan.id, index, 'completed', '')}
-                                      />
-                                      <span className="text-sm text-gray-700">Completed</span>
-                                    </label>
-                                    <label className="flex items-center space-x-2">
-                                      <input 
-                                        type="radio" 
-                                        name={`status-${plan.id}-${index}`} 
-                                        value="in_progress" 
-                                        className="text-yellow-500"
-                                        checked={currentStatus === 'in_progress'}
-                                        onChange={() => handleTaskStatusChange(plan.id, index, 'in_progress', '')}
-                                      />
-                                      <span className="text-sm text-gray-700">In Progress</span>
-                                    </label>
-                                    <label className="flex items-center space-x-2">
-                                      <input 
-                                        type="radio" 
-                                        name={`status-${plan.id}-${index}`} 
-                                        value="pending" 
-                                        className="text-red-500"
-                                        checked={currentStatus === 'pending'}
-                                        onChange={() => handleTaskStatusChange(plan.id, index, 'pending', '')}
-                                      />
-                                      <span className="text-sm text-gray-700">Pending</span>
-                                    </label>
+                <label className="flex items-center space-x-2">
+                                  <input 
+                                    type="radio" 
+                                    name={`status-${plan.id}-${index}`} 
+                                    value="completed" 
+                                    className="text-green-500"
+                                    checked={currentStatus === 'completed'}
+                                    onChange={() => handleTaskStatusChange(plan.id, index, 'completed', '')}
+                                  />
+                  <span className="text-sm text-gray-700">Completed</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                                  <input 
+                                    type="radio" 
+                                    name={`status-${plan.id}-${index}`} 
+                                    value="in_progress" 
+                                    className="text-yellow-500"
+                                    checked={currentStatus === 'in_progress'}
+                                    onChange={() => handleTaskStatusChange(plan.id, index, 'in_progress', '')}
+                                  />
+                  <span className="text-sm text-gray-700">In Progress</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                                  <input 
+                                    type="radio" 
+                                    name={`status-${plan.id}-${index}`} 
+                                    value="pending" 
+                                    className="text-red-500"
+                                    checked={currentStatus === 'pending'}
+                                    onChange={() => handleTaskStatusChange(plan.id, index, 'pending', '')}
+                                  />
+                  <span className="text-sm text-gray-700">Pending</span>
+                </label>
                                   </>
                                 ) : (
                                   /* Read-only radio buttons - show selected value */
@@ -1016,23 +988,23 @@ const TraineeMainDashboard = () => {
                                     </label>
                                   </>
                                 )}
-                              </div>
+              </div>
               
                               {/* Remarks Field - Required for In Progress and Pending */}
                               {(currentStatus === 'in_progress' || currentStatus === 'pending') && (
-                                <div>
+              <div>
                                   <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Remarks/Blockers
                                     {!isEodApproved && <span className="text-red-500 ml-1">*</span>}
                                   </label>
                                   {!isEodApproved ? (
-                                    <textarea
-                                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                      rows="2"
-                                      placeholder="Add any remarks or blockers for this task"
-                                      value={currentRemarks}
-                                      onChange={(e) => handleTaskRemarksChange(plan.id, index, e.target.value)}
-                                    />
+                <textarea
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  rows="2"
+                  placeholder="Add any remarks or blockers for this task"
+                                    value={currentRemarks}
+                                    onChange={(e) => handleTaskRemarksChange(plan.id, index, e.target.value)}
+                                  />
                                   ) : (
                                     <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50">
                                       <p className="text-sm text-gray-700">{currentRemarks || 'No remarks provided'}</p>
@@ -1264,8 +1236,8 @@ const TraineeMainDashboard = () => {
                         </div>
                         <div>
                           <h5 className="font-semibold text-gray-900 text-lg">
-                            {moment(plan.date).format('MMM DD, YYYY')}
-                          </h5>
+                        {moment(plan.date).format('MMM DD, YYYY')}
+                      </h5>
                           <p className="text-sm text-gray-600">
                             {plan.tasks.length} task{plan.tasks.length !== 1 ? 's' : ''} completed
                           </p>
@@ -1276,7 +1248,7 @@ const TraineeMainDashboard = () => {
                           ✓ Approved
                         </span>
                       )}
-                    </div>
+              </div>
                     
                     <div className="space-y-4">
                       {plan.tasks.map((task, index) => {
@@ -1295,10 +1267,10 @@ const TraineeMainDashboard = () => {
                                 <div className="p-2 bg-gray-100 rounded-lg">
                                   <LuCheck className="w-4 h-4 text-gray-600" />
                                 </div>
-                                <div className="flex-1">
+                              <div className="flex-1">
                                   <span className="font-semibold text-gray-900">{task.title}</span>
-                                  <span className="text-sm text-gray-500 ml-2">({task.timeAllocation})</span>
-                                </div>
+                                <span className="text-sm text-gray-500 ml-2">({task.timeAllocation})</span>
+            </div>
                               </div>
                               <span className={`px-3 py-1 text-sm font-medium rounded-full ${
                                 status === 'completed' ? 'bg-green-100 text-green-700 border border-green-200' :
@@ -1311,7 +1283,7 @@ const TraineeMainDashboard = () => {
                                  status === 'pending' ? '⏸ Pending' :
                                  'Not Set'}
                               </span>
-                            </div>
+        </div>
                             
                             {/* Progress Bar */}
                             <div className="mb-2">

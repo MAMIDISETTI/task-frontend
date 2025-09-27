@@ -12,8 +12,6 @@ const UploadJoinersPopup = ({ isOpen, onClose, onSuccess }) => {
   );
 
   // Log the environment variable for debugging
-  // console.log('VITE_GOOGLE_SHEET_URL from .env:', import.meta.env.VITE_GOOGLE_SHEET_URL);
-  // console.log('Google Sheet URL state:', googleSheetUrl);
   const [joinersData, setJoinersData] = useState([]);
   const [validationResult, setValidationResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -51,12 +49,9 @@ const UploadJoinersPopup = ({ isOpen, onClose, onSuccess }) => {
     }
 
     // Debug: Log the Google Sheet URL
-    // console.log('Google Sheet URL:', googleSheetUrl);
-    // console.log('Environment variable:', import.meta.env.VITE_GOOGLE_SHEET_URL);
 
     // Google Sheet URL is optional - if not provided, will work in direct mode
     if (!googleSheetUrl) {
-      // console.log('No Google Sheet URL provided - working in direct mode');
       setErrors(['Google Sheet URL is not configured. Please create a .env file with VITE_GOOGLE_SHEET_URL']);
       return;
     }
@@ -101,7 +96,6 @@ const UploadJoinersPopup = ({ isOpen, onClose, onSuccess }) => {
 
     // Google Sheet URL is optional - if not provided, will work in direct mode
     if (!googleSheetUrl) {
-      // console.log('No Google Sheet URL provided - working in direct mode');
     }
 
     setLoading(true);

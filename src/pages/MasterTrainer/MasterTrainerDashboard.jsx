@@ -53,7 +53,6 @@ const MasterTrainerDashboard = () => {
   // Fetch day plans statistics
   const getDayPlansStats = async () => {
     try {
-      console.log("Fetching day plans stats...");
       const res = await axiosInstance.get(API_PATHS.DAY_PLANS.GET_ALL, {
         params: { 
           role: 'master_trainer',
@@ -61,11 +60,9 @@ const MasterTrainerDashboard = () => {
         }
       });
       
-      console.log("Day plans API response:", res.data);
       const data = res.data;
       if (data.totalPlans !== undefined) {
         // Update dashboard data with real day plans stats
-        console.log("Using real API data for day plans");
         setDashboardData(prev => ({
           ...prev,
           dayPlans: {
@@ -76,7 +73,6 @@ const MasterTrainerDashboard = () => {
           }
         }));
       } else {
-        console.log("No day plans data available");
         setDashboardData(prev => ({
           ...prev,
           dayPlans: {
@@ -89,7 +85,6 @@ const MasterTrainerDashboard = () => {
       }
     } catch (err) {
       console.error("Error fetching day plans stats:", err);
-      console.log("Setting empty day plans data due to error");
       setDashboardData(prev => ({
         ...prev,
         dayPlans: {
@@ -105,13 +100,11 @@ const MasterTrainerDashboard = () => {
   // Fetch campus allocation data from company_allocated_details
   const fetchCampusAllocations = async () => {
     try {
-      console.log("Fetching campus allocations from company_allocated_details...");
       const res = await axiosInstance.get(API_PATHS.USERS.LIST, {
         params: { role: 'trainee' }
       });
       
       if (res.data.success && res.data.users) {
-        console.log("Trainees API response:", res.data.users);
         
         // Extract campus allocations from company_allocated_details field
         const allocations = [];
@@ -134,15 +127,12 @@ const MasterTrainerDashboard = () => {
           }
         });
         
-        console.log("Extracted campus allocations:", allocations);
         setCampusAllocations(allocations);
       } else {
-        console.log("No trainees data available");
         setCampusAllocations([]);
       }
     } catch (err) {
       console.error("Error fetching campus allocations:", err);
-      console.log("Setting empty campus allocations due to error");
       setCampusAllocations([]);
     }
   };
@@ -151,11 +141,9 @@ const MasterTrainerDashboard = () => {
   // Fetch trainers data
   const getTrainers = async () => {
     try {
-      console.log("Fetching trainers...");
       const res = await axiosInstance.get(API_PATHS.USERS.LIST, {
         params: { role: 'trainer' }
       });
-      console.log("Trainers API response:", res.data);
       setTrainers(res.data.users || res.data || []);
     } catch (err) {
       console.error("Error fetching trainers:", err);
@@ -166,11 +154,9 @@ const MasterTrainerDashboard = () => {
   // Fetch trainees data
   const getTrainees = async () => {
     try {
-      console.log("Fetching trainees...");
       const res = await axiosInstance.get(API_PATHS.USERS.LIST, {
         params: { role: 'trainee' }
       });
-      console.log("Trainees API response:", res.data);
       setTrainees(res.data.users || res.data || []);
     } catch (err) {
       console.error("Error fetching trainees:", err);
@@ -181,20 +167,16 @@ const MasterTrainerDashboard = () => {
   // Fetch unassigned trainees data
   const getUnassignedTrainees = async () => {
     try {
-      console.log("Fetching unassigned trainees...");
       
       // First, let's check all trainees to see what we have
       const allTraineesRes = await axiosInstance.get(API_PATHS.USERS.LIST, {
         params: { role: 'trainee' }
       });
-      console.log("All trainees:", allTraineesRes.data);
       
       // Then get unassigned trainees
       const res = await axiosInstance.get(API_PATHS.USERS.LIST, {
         params: { role: 'trainee', unassigned: 'true' }
       });
-      console.log("Unassigned trainees API response:", res.data);
-      console.log("Unassigned trainees count:", res.data?.users?.length || 0);
       setUnassignedTrainees(res.data.users || res.data || []);
     } catch (err) {
       console.error("Error fetching unassigned trainees:", err);
@@ -206,7 +188,6 @@ const MasterTrainerDashboard = () => {
   // Fetch assigned trainees data
   const getAssignedTrainees = async () => {
     try {
-      console.log("Fetching assigned trainees...");
       
       // Get all trainees and filter for assigned ones
       const res = await axiosInstance.get(API_PATHS.USERS.LIST, {
@@ -215,8 +196,6 @@ const MasterTrainerDashboard = () => {
       
       // Filter for assigned trainees (those with assignedTrainer)
       const assignedTraineesData = (res.data.users || res.data || []).filter(trainee => trainee.assignedTrainer);
-      console.log("Assigned trainees:", assignedTraineesData);
-      console.log("Assigned trainees count:", assignedTraineesData.length);
       setAssignedTrainees(assignedTraineesData);
     } catch (err) {
       console.error("Error fetching assigned trainees:", err);
@@ -387,7 +366,6 @@ const MasterTrainerDashboard = () => {
             <LuCalendar className="w-5 h-5 text-green-500" />
           </div>
           <div className="space-y-3">
-            {console.log("Dashboard data for day plans:", dashboardData?.dayPlans)}
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Total Plans</span>
               <span className="font-semibold text-gray-800">

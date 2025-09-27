@@ -80,15 +80,6 @@ const BOADashboard = () => {
         status: joiner.status === 'active' ? 'Active' : joiner.status === 'pending' ? 'Pending' : 'Inactive'
       }));
       
-      console.log('Fetched recent joiners data:', {
-        count: recentJoinersData.length,
-        sample: recentJoinersData.slice(0, 3).map(j => ({
-          name: j.name,
-          joiningDate: j.joiningDate,
-          status: j.status
-        }))
-      });
-      
       setStats({
         totalJoiners: joinerStats.total || 0,
         pendingActivations: joinerStats.pending || 0,
@@ -161,18 +152,10 @@ const BOADashboard = () => {
       const dailyJoiners = response.data.dailyJoiners || [];
       
       // Debug: Log the raw data from backend
-      console.log('Raw dailyJoiners from backend:', dailyJoiners);
-      console.log('Backend response data:', response.data);
       
       // Convert daily joiners to calendar data format
       const calendarDataObj = {};
       dailyJoiners.forEach(item => {
-        console.log('Processing item:', {
-          rawDate: item.date,
-          dateType: typeof item.date,
-          count: item.count
-        });
-        
         // Since backend now returns simple YYYY-MM-DD strings, use them directly
         let dateStr = item.date;
         
@@ -181,20 +164,12 @@ const BOADashboard = () => {
         const adjustedDate = originalDate.add(1, 'day');
         dateStr = adjustedDate.format('YYYY-MM-DD');
         
-        console.log('Date adjustment:', {
-          original: item.date,
-          adjusted: dateStr,
-          count: item.count
-        });
-        
         calendarDataObj[dateStr] = item.count;
       });
       
-      console.log('Final calendar data object:', calendarDataObj);
       
       // Debug: Log what dates will be displayed on calendar
       Object.keys(calendarDataObj).forEach(date => {
-        console.log(`Calendar will show ${calendarDataObj[date]} joiners on ${date}`);
       });
       
       setCalendarData(calendarDataObj);
@@ -210,10 +185,7 @@ const BOADashboard = () => {
       
       // TEMPORARY: Adjust the selected date by one day to match the calendar adjustment
       const adjustedDate = moment(dateStr).subtract(1, 'day').format('YYYY-MM-DD');
-      console.log('Date filtering adjustment:', {
-        selected: dateStr,
-        adjusted: adjustedDate
-      });
+      
       // Fetch all joiners and filter by date on frontend since backend might not support joiningDate filter
       const response = await axiosInstance.get(`${API_PATHS.JOINERS.GET_ALL}?limit=1000`);
       const allJoiners = response.data.joiners || [];
@@ -223,7 +195,6 @@ const BOADashboard = () => {
         // Try multiple possible date field names in order of preference
         const dateField = joiner.date_of_joining || joiner.joiningDate || joiner.joining_date;
         if (!dateField) {
-          console.log('Joiner has no date field:', joiner.candidate_name || joiner.name);
           return false;
         }
         
@@ -236,71 +207,39 @@ const BOADashboard = () => {
           // First try DD-MMM-YYYY format (like "25-Sep-2025")
           if (moment(dateField, 'DD-MMM-YYYY', true).isValid()) {
             momentDate = moment(dateField, 'DD-MMM-YYYY');
-            console.log('Parsed as DD-MMM-YYYY:', { dateField, parsed: momentDate.format('YYYY-MM-DD') });
           }
           // Then try DD-MMM-YYYY without strict mode
           else if (moment(dateField, 'DD-MMM-YYYY').isValid()) {
             momentDate = moment(dateField, 'DD-MMM-YYYY');
-            console.log('Parsed as DD-MMM-YYYY (non-strict):', { dateField, parsed: momentDate.format('YYYY-MM-DD') });
           }
           // Then try ISO format
           else if (moment(dateField).isValid()) {
             momentDate = moment.parseZone(dateField);
-            console.log('Parsed as ISO:', { dateField, parsed: momentDate.format('YYYY-MM-DD') });
           }
           else {
-            console.log('Could not parse date:', { dateField });
             return false;
           }
           
           joinerDate = momentDate.format('YYYY-MM-DD');
         } catch (error) {
-          console.log('Error parsing date:', { dateField, error: error.message });
           return false;
         }
         
         const match = joinerDate === adjustedDate;
         
-        console.log('Comparing dates:', { 
-          joinerName: joiner.candidate_name || joiner.name,
-          dateField: dateField,
-          joinerDate: joinerDate, 
-          selectedDate: dateStr,
-          adjustedDate: adjustedDate,
-          match: match 
-        });
-        
         return match;
       });
       
       // Debug logging
-      console.log('Selected date:', dateStr);
-      console.log('Total joiners fetched:', allJoiners.length);
-      console.log('Filtered joiners for date:', filteredJoiners.length);
       
       // Debug: Show sample joiner data structure
       if (allJoiners.length > 0) {
-        console.log('Sample joiner data structure:', {
-          name: allJoiners[0].candidate_name || allJoiners[0].name,
-          joiningDate: allJoiners[0].joiningDate,
-          date_of_joining: allJoiners[0].date_of_joining,
-          joining_date: allJoiners[0].joining_date,
-          allFields: Object.keys(allJoiners[0])
-        });
+        // Sample joiner data available
       }
       
       // Debug: Log all joiners with their dates to understand the data structure
-      console.log('All joiners with dates:', allJoiners.map(j => ({
-        name: j.candidate_name || j.name,
-        joiningDate: j.joiningDate,
-        date_of_joining: j.date_of_joining,
-        joining_date: j.joining_date,
-        parsedDate: j.date_of_joining ? moment(j.date_of_joining, 'DD-MMM-YYYY').format('YYYY-MM-DD') : 'N/A',
-        parsedDateISO: j.joiningDate ? moment(j.joiningDate).format('YYYY-MM-DD') : 'N/A'
-      })));
       
       // Debug: Show what the backend calendar data looks like
-      console.log('Backend calendar data:', calendarData);
       
       // Show joiners around the target date for debugging
       const targetDate = moment(dateStr);
@@ -310,19 +249,6 @@ const BOADashboard = () => {
         const joinerDate = moment(dateField);
         return joinerDate.isBetween(targetDate.clone().subtract(2, 'days'), targetDate.clone().add(2, 'days'), 'day', '[]');
       });
-      
-      console.log('Joiners around target date:', nearbyJoiners.map(j => ({
-        name: j.candidate_name || j.name,
-        joiningDate: j.joiningDate,
-        date_of_joining: j.date_of_joining,
-        joining_date: j.joining_date,
-        actualDateField: j.joiningDate || j.date_of_joining || j.joining_date,
-        parseZoneFormatted: moment.parseZone(j.joiningDate || j.date_of_joining || j.joining_date).format('YYYY-MM-DD'),
-        utcFormatted: moment.utc(j.joiningDate || j.date_of_joining || j.joining_date).format('YYYY-MM-DD'),
-        localFormatted: moment(j.joiningDate || j.date_of_joining || j.joining_date).format('YYYY-MM-DD'),
-        startOfDayFormatted: moment(j.joiningDate || j.date_of_joining || j.joining_date).startOf('day').format('YYYY-MM-DD'),
-        dayOfWeek: moment(j.joiningDate || j.date_of_joining || j.joining_date).format('dddd')
-      })));
       
       setSelectedDateJoiners(filteredJoiners);
     } catch (error) {
@@ -338,8 +264,6 @@ const BOADashboard = () => {
       const allJoinersData = response.data.joiners || [];
       
       // Debug: Log the dates to see what we're getting
-      // console.log('All joiners with dates:', allJoinersData.map(j => ({
-      //   name: j.name,
       //   joiningDate: j.joiningDate,
       //   joiningDateType: typeof j.joiningDate,
       //   joiningDateTimestamp: new Date(j.joiningDate).getTime(),
@@ -368,12 +292,9 @@ const BOADashboard = () => {
           });
         }
         
-        // console.log(`Comparing: ${a.name} (${dateA.toISOString()}) vs ${b.name} (${dateB.toISOString()})`);
         return dateA - dateB; // Ascending order (oldest first - September before October)
       });
       
-      // console.log('Sorted joiners:', sortedJoiners.map(j => ({
-      //   name: j.name,
       //   joiningDate: j.joiningDate,
       //   joiningDateTimestamp: new Date(j.joiningDate).getTime(),
       //   formattedDate: moment(j.joiningDate).format('MMM D, YYYY')
@@ -423,8 +344,6 @@ const BOADashboard = () => {
       const allJoinersData = response.data.joiners || [];
       
       // Debug: Log all joiners and their statuses
-      // console.log('All joiners data:', allJoinersData);
-      // console.log('Joiners statuses:', allJoinersData.map(j => ({ name: j.name, status: j.status })));
       
       // Filter for pending joiners (case insensitive)
       const pendingJoiners = allJoinersData.filter(joiner => 
@@ -443,7 +362,6 @@ const BOADashboard = () => {
         return dateA - dateB; // Ascending order (oldest first - September before October)
       });
       
-      // console.log('Filtered pending joiners:', sortedPendingJoiners);
       setAllJoiners(sortedPendingJoiners);
     } catch (error) {
       console.error('Error fetching pending joiners:', error);
@@ -478,15 +396,6 @@ const BOADashboard = () => {
   useEffect(() => {
     // First filter: Only today's joiners with Active status
     const today = moment().format('YYYY-MM-DD');
-    console.log('Filtering today\'s active joiners:', {
-      today,
-      recentJoinersCount: recentJoiners.length,
-      recentJoiners: recentJoiners.map(j => ({
-        name: j.name,
-        joiningDate: j.joiningDate,
-        status: j.status
-      }))
-    });
     
     const todayActiveJoiners = recentJoiners.filter(joiner => {
       // Try multiple date parsing methods
@@ -504,23 +413,13 @@ const BOADashboard = () => {
         }
       }
       
-      console.log('Recent joiners filter:', { 
-        name: joiner.name,
-        originalJoiningDate: joiner.joiningDate,
-        joinerDate, 
-        today, 
-        status: joiner.status, 
-        match: joinerDate === today && (joiner.status === 'Active' || joiner.status === 'active') 
-      });
       return joinerDate === today && (joiner.status === 'Active' || joiner.status === 'active');
     });
     
-    console.log('Today\'s active joiners result:', todayActiveJoiners);
 
     // If no joiners found for today, show recent active joiners from last 7 days
     let finalJoiners = todayActiveJoiners;
     if (todayActiveJoiners.length === 0) {
-      console.log('No joiners found for today, checking last 7 days...');
       const sevenDaysAgo = moment().subtract(7, 'days').format('YYYY-MM-DD');
       const recentActiveJoiners = recentJoiners.filter(joiner => {
         let joinerDate;
@@ -538,15 +437,12 @@ const BOADashboard = () => {
       
       // If still no joiners, show all active joiners for debugging
       if (recentActiveJoiners.length === 0) {
-        console.log('No joiners found in last 7 days, showing all active joiners for debugging...');
         const allActiveJoiners = recentJoiners.filter(joiner => 
           joiner.status === 'Active' || joiner.status === 'active'
         );
         finalJoiners = allActiveJoiners;
-        console.log('All active joiners:', allActiveJoiners);
       } else {
         finalJoiners = recentActiveJoiners;
-        console.log('Recent active joiners (last 7 days):', recentActiveJoiners);
       }
     }
 
@@ -692,7 +588,6 @@ const BOADashboard = () => {
     
     // Debug: Log when we're checking for joiner count
     if (count > 0) {
-      console.log(`Calendar checking date ${dateStr}: found ${count} joiners`);
     }
     
     return count;

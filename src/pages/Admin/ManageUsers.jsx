@@ -64,7 +64,6 @@ const ManageUsers = () => {
       const response = await axiosInstance.get(API_PATHS.USERS.LIST, {
         params: { role: 'trainee', unassigned: 'true' }
       });
-      console.log("Unassigned trainees response:", response.data);
       setUnassignedTrainees(response.data.users || []);
     } catch (error) {
       console.error("Error fetching unassigned trainees:", error);
@@ -138,7 +137,6 @@ const ManageUsers = () => {
     setAssignmentSearchTerm('');
     
     // Fetch unassigned trainees when opening the popup
-    console.log("Opening Assign Trainees popup, fetching unassigned trainees...");
     getUnassignedTrainees();
   };
 

@@ -21,9 +21,7 @@ const UploadResults = () => {
 
   const fetchResults = async () => {
     try {
-      console.log('Fetching results for exam type:', activeTab);
       const response = await axiosInstance.get(`${API_PATHS.RESULTS.GET_ALL}?examType=${activeTab}`);
-      console.log('Results response:', response.data);
       setResults(response.data.results || []);
     } catch (error) {
       console.error('Error fetching results:', error);

@@ -104,16 +104,11 @@ const DemoManagement = () => {
     }
 
     try {
-      // Debug user data
-      console.log('User data:', user);
-      console.log('Using traineeId:', user?.author_id || 'trainee1');
       
       // Check if backend server is running (optional health check)
       try {
         await axiosInstance.get('/api/health', { timeout: 3000 });
-        console.log('Backend server is running');
       } catch (healthError) {
-        console.log('Backend server not available, proceeding with upload attempt');
       }
       
       // Create FormData for file upload
@@ -161,7 +156,6 @@ const DemoManagement = () => {
 
         setUploadedDemos(prev => [newDemo, ...prev]);
         setDemo_managements_details(prev => [newDemo, ...prev]);
-        console.log('demo_managements_details array updated:', [newDemo, ...demo_managements_details]);
         toast.success('Demo uploaded successfully! Status: Under Review');
       } else {
         throw new Error(response.data.message || 'Upload failed');
@@ -190,7 +184,6 @@ const DemoManagement = () => {
       }
       
       // Fallback: Add to local state for development
-      console.log('Adding demo to local state as fallback');
       const newDemo = {
         id: Date.now().toString(),
         title: demoUpload.title,
@@ -215,22 +208,18 @@ const DemoManagement = () => {
       
       setUploadedDemos(prev => [newDemo, ...prev]);
       setDemo_managements_details(prev => [newDemo, ...prev]);
-      console.log('Demo added to local state:', newDemo);
       toast.success('Demo uploaded successfully (local storage)');
     }
   };
 
   const fetchDemos = async () => {
     try {
-      console.log('Fetching demos for user:', user);
-      console.log('Using traineeId for fetch:', user?.author_id || 'trainee1');
       const response = await axiosInstance.get(API_PATHS.DEMO.GET_ALL, {
         params: { traineeId: user?.author_id || 'trainee1' }
       });
       if (response.data.success) {
         setUploadedDemos(response.data.demos);
         setDemo_managements_details(response.data.demos);
-        console.log('demo_managements_details array initialized with API data:', response.data.demos);
       } else {
         throw new Error('Failed to fetch demos');
       }
@@ -239,7 +228,6 @@ const DemoManagement = () => {
       // Set empty arrays if API fails
       setUploadedDemos([]);
       setDemo_managements_details([]);
-      console.log('No demos found or error occurred');
     }
   };
 
@@ -257,7 +245,6 @@ const DemoManagement = () => {
         if (response.data.success) {
           setUploadedDemos(prev => prev.filter(demo => demo.id !== demoId));
           setDemo_managements_details(prev => prev.filter(demo => demo.id !== demoId));
-          console.log('demo_managements_details array updated after deletion');
           toast.success('Demo deleted successfully!');
         }
       } catch (error) {
@@ -269,9 +256,6 @@ const DemoManagement = () => {
 
   // Video viewing functions
   const openVideoModal = (demo) => {
-    console.log('Opening video modal for demo:', demo);
-    console.log('Video fileUrl:', demo.fileUrl);
-    console.log('Video fileName:', demo.fileName);
     setSelectedVideo(demo);
     setShowVideoModal(true);
   };
@@ -295,11 +279,8 @@ const DemoManagement = () => {
   const fetchCampusAllocation = async () => {
     try {
       const traineeId = user?.id || user?.author_id;
-      console.log('Fetching campus allocation for trainee:', traineeId);
-      console.log('User object:', user);
       
       if (!traineeId) {
-        console.log('No trainee ID available, skipping campus allocation fetch');
         setCampusAllocation(null);
         return;
       }
@@ -308,7 +289,6 @@ const DemoManagement = () => {
         params: { traineeId: traineeId }
       });
       
-      console.log('Campus allocation API response:', response.data);
       
       if (response.data.success && response.data.allocations && response.data.allocations.length > 0) {
         // Get the latest allocation (most recent)
@@ -319,9 +299,7 @@ const DemoManagement = () => {
           status: latestAllocation.status || 'confirmed',
           notes: latestAllocation.notes || ''
         });
-        console.log('Campus allocation set:', latestAllocation);
       } else {
-        console.log('No campus allocation found');
         setCampusAllocation(null);
       }
     } catch (error) {
@@ -783,12 +761,6 @@ const DemoManagement = () => {
                           onError={(e) => {
                             console.error('Video load error:', e);
                             console.error('Video src:', selectedVideo.fileUrl);
-                          }}
-                          onLoadStart={() => {
-                            console.log('Video loading started:', selectedVideo.fileUrl);
-                          }}
-                          onCanPlay={() => {
-                            console.log('Video can play:', selectedVideo.fileUrl);
                           }}
                         >
                           Your browser does not support the video tag.

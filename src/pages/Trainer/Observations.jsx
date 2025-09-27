@@ -44,8 +44,6 @@ const Observations = () => {
   // Handle trainee selection and update gender
   const handleTraineeChange = (traineeId) => {
     const selectedTrainee = assignedTrainees.find(trainee => trainee._id === traineeId);
-    console.log('Selected trainee:', selectedTrainee);
-    console.log('Trainee genre:', selectedTrainee?.genre);
     setSelectedTraineeGender(selectedTrainee?.genre || null);
     setFormData({...formData, traineeId: traineeId});
   };
@@ -67,8 +65,6 @@ const Observations = () => {
   const getAssignedTrainees = async () => {
     try {
       const res = await axiosInstance.get(API_PATHS.ASSIGNMENTS.GET_TRAINER);
-      console.log('Assigned trainees response:', res.data);
-      console.log('Trainees data:', res.data?.trainees);
       setAssignedTrainees(res.data?.trainees || []);
     } catch (err) {
       console.error("Error loading trainees", err);

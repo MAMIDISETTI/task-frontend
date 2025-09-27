@@ -153,7 +153,6 @@ const AttendanceOverview = () => {
   };
 
   const handleAttendanceRequest = (index) => {
-    console.log(`Attendance request for row ${index}`);
     setOpenDropdownIndex(null);
   };
 

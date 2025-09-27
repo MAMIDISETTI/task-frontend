@@ -158,11 +158,9 @@ const NewJoiners = () => {
         lastClockOut: null
       };
 
-      console.log('Creating trainee account with data:', traineeData);
 
       const response = await axiosInstance.post(API_PATHS.USERS.CREATE_USER, traineeData);
       
-      console.log('Trainee account created successfully:', response.data);
       
       // Add to recent joiners for display
       const newJoiner = {

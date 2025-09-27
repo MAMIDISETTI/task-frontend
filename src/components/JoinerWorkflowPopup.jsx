@@ -68,36 +68,28 @@ const JoinerWorkflowPopup = ({ isOpen, onClose, joiner, joiners = [], onSuccess 
       
       // Try multiple email fields to find existing user
       const emailToCheck = joiner.candidate_personal_mail_id || joiner.email;
-      console.log('Checking existing user for email:', emailToCheck);
-      console.log('Joiner data:', joiner);
       
       // Check if user exists by email
       const response = await axiosInstance.get(`${API_PATHS.USERS.LIST}?email=${emailToCheck}`);
       const users = response.data.users || [];
       
-      console.log('Found users:', users);
       
       if (users.length > 0) {
         const user = users[0];
         setExistingUser(user);
-        console.log('Existing user found:', user);
         
         // Check if user already has an assigned trainer
         if (user.assignedTrainer) {
-          console.log('User has assigned trainer:', user.assignedTrainer);
           setIsAlreadyAssigned(true);
           // Fetch trainer details
           const trainerResponse = await axiosInstance.get(`${API_PATHS.USERS.LIST}?_id=${user.assignedTrainer}`);
           const trainers = trainerResponse.data.users || [];
-          console.log('Trainer details:', trainers);
           if (trainers.length > 0) {
             setSelectedTrainer(trainers[0]);
           }
         } else {
-          console.log('User has no assigned trainer');
         }
       } else {
-        console.log('No existing user found');
       }
     } catch (error) {
       console.error('Error checking existing user:', error);
@@ -123,7 +115,6 @@ const JoinerWorkflowPopup = ({ isOpen, onClose, joiner, joiners = [], onSuccess 
     try {
       setLoading(true);
       const response = await axiosInstance.get(`${API_PATHS.ASSIGNMENTS.GET_ALL}?trainerId=${trainerId}`);
-      console.log('Trainer assignments response:', response.data);
       setTrainerTrainees(response.data.assignments || []);
     } catch (error) {
       console.error('Error fetching trainer trainees:', error);
@@ -254,8 +245,6 @@ const JoinerWorkflowPopup = ({ isOpen, onClose, joiner, joiners = [], onSuccess 
           };
           
           // Create user account
-          console.log('Sending user data to backend:', userData);
-          console.log('EmployeeId value:', userData.employeeId, 'Type:', typeof userData.employeeId);
           const userResponse = await axiosInstance.post(API_PATHS.USERS.CREATE_USER, userData);
           
           // Update joiner record
@@ -277,7 +266,6 @@ const JoinerWorkflowPopup = ({ isOpen, onClose, joiner, joiners = [], onSuccess 
         if (selectedTrainer && successfulResults.length > 0) {
           try {
             const traineeIds = successfulResults.map(result => result.user.author_id);
-            console.log('Creating assignment for trainer:', selectedTrainer.author_id, 'and trainees:', traineeIds);
             
             const assignmentData = {
               trainerId: selectedTrainer.author_id,
@@ -288,7 +276,6 @@ const JoinerWorkflowPopup = ({ isOpen, onClose, joiner, joiners = [], onSuccess 
             };
             
             const assignmentResponse = await axiosInstance.post(API_PATHS.ASSIGNMENTS.CREATE, assignmentData);
-            console.log('Assignment created successfully:', assignmentResponse.data);
             toast.success(`Assignment created for ${successfulResults.length} trainees!`);
           } catch (error) {
             console.error('Error creating assignment:', error);
@@ -374,11 +361,8 @@ const JoinerWorkflowPopup = ({ isOpen, onClose, joiner, joiners = [], onSuccess 
           courseLevelExams: joiner.courseLevelExams || []
         };
         
-        console.log('Creating user with data:', userData);
         
         // Create user account
-        console.log('Sending user data to backend:', userData);
-        console.log('EmployeeId value:', userData.employeeId, 'Type:', typeof userData.employeeId);
         const userResponse = await axiosInstance.post(API_PATHS.USERS.CREATE_USER, userData);
 
         // Update joiner record with status change and account creation
@@ -392,7 +376,6 @@ const JoinerWorkflowPopup = ({ isOpen, onClose, joiner, joiners = [], onSuccess 
         // Create assignment if trainer is selected
         if (selectedTrainer) {
           try {
-            console.log('Creating assignment for trainer:', selectedTrainer.author_id, 'and trainee:', userResponse.data.user.author_id);
             
             const assignmentData = {
               trainerId: selectedTrainer.author_id,
@@ -403,7 +386,6 @@ const JoinerWorkflowPopup = ({ isOpen, onClose, joiner, joiners = [], onSuccess 
             };
             
             const assignmentResponse = await axiosInstance.post(API_PATHS.ASSIGNMENTS.CREATE, assignmentData);
-            console.log('Assignment created successfully:', assignmentResponse.data);
             toast.success('Assignment created successfully!');
           } catch (error) {
             console.error('Error creating assignment:', error);

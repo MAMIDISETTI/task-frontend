@@ -1,4 +1,4 @@
-export const BASE_URL = import.meta.env.VITE_API_URL || "https://task-backend-1-qe16.onrender.com/";
+export const BASE_URL = import.meta.env.VITE_API_URL || 'https://task-backend-fetch-data.onrender.com/';
 
 // utils/apiPaths.js
 export const API_PATHS = {

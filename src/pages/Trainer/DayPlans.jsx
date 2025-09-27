@@ -53,9 +53,7 @@ const DayPlans = () => {
   // Fetch day plans
   const getDayPlans = async () => {
     try {
-     // console.log("Fetching day plans from:", API_PATHS.DAY_PLANS.GET_ALL);
       const res = await axiosInstance.get(API_PATHS.DAY_PLANS.GET_ALL);
-    //  console.log("Day plans response:", res.data);
       setDayPlans(res.data.dayPlans || []);
     } catch (error) {
      // console.error("Error fetching day plans:", error);
@@ -66,9 +64,7 @@ const DayPlans = () => {
   // Fetch assigned trainees
   const getAssignedTrainees = async () => {
     try {
-    //  console.log("Fetching trainees from:", API_PATHS.USERS.LIST + "?role=trainee");
       const res = await axiosInstance.get(API_PATHS.USERS.LIST + "?role=trainee");
-    //  console.log("Trainees response:", res.data);
       setAssignedTrainees(res.data.users || []);
     } catch (error) {
     //  console.error("Error fetching trainees:", error);
@@ -79,15 +75,11 @@ const DayPlans = () => {
   // Fetch trainee day plans
   const getTraineeDayPlans = async () => {
     try {
-    //  console.log("Fetching trainee day plans from:", API_PATHS.TRAINEE_DAY_PLANS.GET_ALL);
       const res = await axiosInstance.get(API_PATHS.TRAINEE_DAY_PLANS.GET_ALL);
-    //  console.log("Trainee day plans response:", res.data);
       
       // Debug each plan's checkbox data
       if (res.data.dayPlans) {
         res.data.dayPlans.forEach((plan, index) => {
-          // console.log(`Plan ${index} (${plan._id}):`, {
-          //   trainee: plan.trainee?.name,
           //   date: plan.date,
           //   checkboxes: plan.checkboxes,
           //   eodUpdate: plan.eodUpdate
@@ -154,7 +146,6 @@ const DayPlans = () => {
           createdBy: "trainer" // Indicate this was created by a trainer
         };
 
-       // console.log("Sending day plan data:", dayPlanData); // Debug log
         return axiosInstance.post(API_PATHS.TRAINEE_DAY_PLANS.CREATE, dayPlanData);
       });
 
@@ -414,9 +405,6 @@ const DayPlans = () => {
 
   // Handle trainee plan popup
   const handleTraineePlanClick = (plan) => {
-    // console.log("Selected trainee plan:", plan);
-    // console.log("Plan checkboxes:", plan.checkboxes);
-    // console.log("Plan EOD update:", plan.eodUpdate);
     setSelectedTraineePlan(plan);
     setShowTraineePlanPopup(true);
     setReviewRemarks("");
@@ -674,19 +662,9 @@ const DayPlans = () => {
                                     <h6 className="font-medium text-sm text-gray-700 mb-2">Additional Activities</h6>
                                     {(() => {
                                       // Comprehensive debugging
-                                      // console.log('=== CHECKBOX DEBUG START ===');
-                                      // console.log('Plan ID:', plan._id);
-                                      // console.log('Task Index:', taskIndex);
-                                      // console.log('Task Object:', task);
-                                      // console.log('Task ID from task object:', task.id);
-                                      // console.log('Task _id from task object:', task._id);
-                                      // console.log('All plan checkboxes:', plan.checkboxes);
-                                      // console.log('Checkboxes type:', typeof plan.checkboxes);
-                                      // console.log('Checkboxes keys:', Object.keys(plan.checkboxes || {}));
                                       
                                       // Handle different checkbox data structures
                                       if (!plan.checkboxes) {
-                                      //  console.log('No checkboxes object found');
                                         return (
                                           <div className="text-center py-2 text-gray-500">
                                             <p className="text-xs">No additional activities for this task</p>
@@ -706,25 +684,18 @@ const DayPlans = () => {
                                         task.id?.toString()
                                       ];
                                       
-                                    //  console.log('Trying possible keys:', possibleKeys);
-                                    //  console.log('Available checkbox keys in plan:', Object.keys(plan.checkboxes));
                                       
                                       let taskCheckboxes = null;
                                       let foundKey = null;
                                       
                                       for (const key of possibleKeys) {
-                                      //  console.log(`Checking key "${key}":`, plan.checkboxes[key] ? 'FOUND' : 'NOT FOUND');
                                         if (plan.checkboxes[key]) {
                                           taskCheckboxes = plan.checkboxes[key];
                                           foundKey = key;
-                                       //   console.log(`Found checkboxes with key: ${key}`);
                                           break;
                                         }
                                       }
                                       
-                                    //  console.log('Final taskCheckboxes:', taskCheckboxes);
-                                    //  console.log('Found key:', foundKey);
-                                     // console.log('=== CHECKBOX DEBUG END ===');
                                       
                                       if (!taskCheckboxes || (Array.isArray(taskCheckboxes) && taskCheckboxes.length === 0) || (typeof taskCheckboxes === 'object' && Object.keys(taskCheckboxes).length === 0)) {
                                         return (
@@ -1188,9 +1159,6 @@ const DayPlans = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Additional Activities</label>
                 {(() => {
-                 // console.log("Rendering checkboxes for plan:", selectedTraineePlan._id);
-                //  console.log("Checkboxes data:", selectedTraineePlan.checkboxes);
-                //  console.log("Checkboxes keys:", selectedTraineePlan.checkboxes ? Object.keys(selectedTraineePlan.checkboxes) : 'No checkboxes');
                   
                   // Handle different checkbox data structures
                   if (!selectedTraineePlan.checkboxes) return false;

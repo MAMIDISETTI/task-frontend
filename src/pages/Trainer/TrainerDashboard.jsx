@@ -35,7 +35,6 @@ const TrainerDashboard = () => {
   const getTrainerDashboard = async () => {
     try {
       const res = await axiosInstance.get(API_PATHS.DASHBOARD.TRAINER);
-      console.log("Trainer Dashboard Response:", res.data);
       setDashboardData(res.data);
       
       // Check today's attendance status

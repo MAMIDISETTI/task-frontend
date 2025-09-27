@@ -13,7 +13,6 @@ const SideMenu = ({ activeMenu, onMenuClick }) => {
   const navigate = useNavigate();
 
   const handleClick = (route, isSubmenu = false) => {
-    // console.log('handleClick called:', { route, isSubmenu, onMenuClick: !!onMenuClick });
     
     if (route === "logout") {
       handelLogout();
@@ -25,30 +24,27 @@ const SideMenu = ({ activeMenu, onMenuClick }) => {
         (route.includes('/master-trainer/day-plans') || 
          route.includes('/master-trainer/observations') || 
          route.includes('/master-trainer/assignments'))) {
-      // console.log('Keeping Plan & Progress dropdown open for Master Trainer');
       setExpandedMenus(prev => ({
         ...prev,
         "mt03": true
       }));
     }
 
+
     navigate(route);
     
     // Close sidebar on mobile after navigation (only for main menu items, not submenu)
     if (onMenuClick && !isSubmenu) {
-      // console.log('Calling onMenuClick');
       onMenuClick();
     }
   };
 
   const toggleSubmenu = (menuId) => {
-    // console.log('toggleSubmenu called for menuId:', menuId, 'current state:', expandedMenus[menuId]);
     setExpandedMenus(prev => {
       const newState = {
         ...prev,
         [menuId]: !prev[menuId]
       };
-      // console.log('toggleSubmenu new state:', newState);
       return newState;
     });
   };
@@ -84,20 +80,16 @@ const SideMenu = ({ activeMenu, onMenuClick }) => {
 
   // Keep dropdowns open when navigating to their submenu items
   useEffect(() => {
-    // console.log('activeMenu changed:', activeMenu, 'user role:', user?.role);
     
     // Plan & Progress dropdown (Master Trainer only)
     if (activeMenu === "Day Plans" || activeMenu === "Observations" || activeMenu === "Assignments" || 
         activeMenu === "Manage Tasks" || activeMenu === "Create Task") {
       if (user?.role === 'master_trainer') {
-        // console.log('Setting Plan & Progress dropdown to open for activeMenu:', activeMenu);
         setExpandedMenus(prev => {
-          // console.log('Current expandedMenus:', prev);
           const newState = {
             ...prev,
             "mt03": true // Plan & Progress menu ID for Master Trainer
           };
-          // console.log('New expandedMenus:', newState);
           return newState;
         });
       }

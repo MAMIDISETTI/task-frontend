@@ -41,14 +41,11 @@ const CampusAllocation = () => {
 
   const fetchTrainees = async () => {
     try {
-      console.log('Fetching trainees...');
       const response = await axiosInstance.get(API_PATHS.USERS.LIST, {
         params: { role: 'trainee' }
       });
-      console.log('Trainees API response:', response.data);
       if (response.data.users) {
         const trainees = response.data.users;
-        console.log('Trainees data:', trainees);
         
         // Fetch allocations to determine campus allocation status
         try {
@@ -66,7 +63,6 @@ const CampusAllocation = () => {
               allocatedCampus: allocationMap[trainee._id || trainee.id] || null
             }));
             
-            console.log('Setting trainees with allocation:', traineesWithAllocation);
             setTrainees(traineesWithAllocation);
           } else {
             // If no allocations, set allocatedCampus to null for all trainees
@@ -74,7 +70,6 @@ const CampusAllocation = () => {
               ...trainee,
               allocatedCampus: null
             }));
-            console.log('Setting trainees without allocation:', traineesWithAllocation);
             setTrainees(traineesWithAllocation);
           }
         } catch (allocationError) {
@@ -84,12 +79,10 @@ const CampusAllocation = () => {
             ...trainee,
             allocatedCampus: null
           }));
-          console.log('Setting trainees after allocation error:', traineesWithAllocation);
           setTrainees(traineesWithAllocation);
         }
       } else {
         // Mock data for development
-        console.log('Using mock data for trainees');
         setTrainees([
           {
             id: '1',
@@ -131,7 +124,6 @@ const CampusAllocation = () => {
       }
     } catch (error) {
       console.error('Error fetching trainees:', error);
-      console.log('Setting empty trainees array due to error');
       setTrainees([]);
     }
   };
@@ -224,12 +216,6 @@ const CampusAllocation = () => {
     if (!selectedTrainee || !selectedCampus || !allocationDate) return;
 
     try {
-      console.log('Creating allocation with:', {
-        traineeId: selectedTrainee._id || selectedTrainee.id,
-        traineeAuthorId: selectedTrainee.author_id,
-        campusId: selectedCampus,
-        allocatedDate: allocationDate
-      });
 
       const response = await axiosInstance.post(API_PATHS.ALLOCATION.CREATE, {
         traineeId: selectedTrainee._id || selectedTrainee.id,
@@ -238,7 +224,6 @@ const CampusAllocation = () => {
         status: 'confirmed'
       });
 
-      console.log('Allocation response:', response.data);
 
       if (response.data.success) {
         fetchTrainees();
@@ -253,14 +238,6 @@ const CampusAllocation = () => {
     }
   };
 
-  const handleDebugAllocations = async () => {
-    try {
-      const response = await axiosInstance.get('/api/allocation/debug');
-      console.log('Debug allocations response:', response.data);
-    } catch (error) {
-      console.error('Error debugging allocations:', error);
-    }
-  };
 
   const handleCreateCampus = async () => {
     if (!newCampus.name || !newCampus.location || !newCampus.capacity) return;
@@ -390,12 +367,6 @@ const CampusAllocation = () => {
               >
                 <LuUser className="w-4 h-4 mr-2" />
                 Allocate Campus
-              </button>
-              <button
-                onClick={handleDebugAllocations}
-                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm font-medium"
-              >
-                Debug Allocations
               </button>
             </div>
           </div>

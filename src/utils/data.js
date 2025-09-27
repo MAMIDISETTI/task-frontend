@@ -184,12 +184,6 @@ import {
       path: "/master-trainer/campus-allocation",
     },
     {
-      id: "mt04",
-      label: "Reports",
-      icon: LuEye,
-      path: "/master-trainer/reports",
-    },
-    {
       id: "mt05",
       label: "Team Members",
       icon: LuUsers,

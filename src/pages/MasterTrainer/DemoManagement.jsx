@@ -165,7 +165,6 @@ const MasterTrainerDemoManagement = () => {
 
   const fetchTrainerApprovedDemos = async () => {
     try {
-      console.log('Fetching trainer-approved demos for master trainer');
       
       // Fetch all demos and filter for trainer-approved ones
       const response = await axiosInstance.get(API_PATHS.DEMO.GET_ALL, {
@@ -175,7 +174,6 @@ const MasterTrainerDemoManagement = () => {
       });
       
       if (response.data.success && response.data.demos) {
-        console.log('Fetched all demos for master trainer filtering:', response.data.demos);
         
         // Filter demos that have been approved by trainers but not yet by master trainer
         const approvedDemos = response.data.demos.filter(demo => 
@@ -199,10 +197,8 @@ const MasterTrainerDemoManagement = () => {
           return demo;
         }));
         
-        console.log('Filtered trainer-approved demos with names:', demosWithTrainerNames);
         setTrainerApprovedDemos(demosWithTrainerNames);
       } else {
-        console.log('No demos found, using empty array');
         setTrainerApprovedDemos([]);
       }
     } catch (error) {
@@ -270,7 +266,6 @@ const MasterTrainerDemoManagement = () => {
   };
 
   const openVideoModal = (demo) => {
-    console.log('Opening video modal for demo:', demo);
     setSelectedDemo(demo);
     setShowVideoModal(true);
   };
@@ -294,13 +289,6 @@ const MasterTrainerDemoManagement = () => {
     }
 
     try {
-      console.log('Submitting final review:', {
-        demoId: selectedFinalReviewDemo.demoId || selectedFinalReviewDemo.id,
-        action: finalReviewData.action,
-        rating: finalReviewData.rating,
-        feedback: finalReviewData.feedback,
-        masterTrainerId: user?.author_id || user?.id
-      });
 
       // Make API call to update demo with master trainer review
       const reviewPayload = {
@@ -317,7 +305,6 @@ const MasterTrainerDemoManagement = () => {
       );
 
       if (response.data.success) {
-        console.log('Final review submitted successfully:', response.data);
         
         // Refresh data for both Final Reviews and All Demos tabs
         await Promise.all([
@@ -1519,8 +1506,6 @@ const MasterTrainerDemoManagement = () => {
                         controls
                         className="w-full h-auto"
                         onError={(e) => console.error('Video error:', e)}
-                        onLoadStart={() => console.log('Video loading started')}
-                        onCanPlay={() => console.log('Video can play')}
                       >
                         <source src={selectedDemo.fileUrl} type="video/mp4" />
                         Your browser does not support the video tag.

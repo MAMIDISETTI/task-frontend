@@ -58,7 +58,6 @@ const AssignTrainees = () => {
         params: { role: 'trainee' }
       });
       const traineesData = response.data.users || response.data || [];
-      console.log('Fetched trainees data:', traineesData);
       setTrainees(traineesData);
     } catch (error) {
       console.error('Error fetching trainees:', error);
@@ -194,7 +193,6 @@ const AssignTrainees = () => {
     getUnassignedTrainees();
     
     // Debug logging
-    console.log('Selected trainees when opening popup:', selectedTrainees);
   };
 
   const handleTraineeSelection = (traineeId) => {
@@ -449,7 +447,6 @@ const AssignTrainees = () => {
                 {getCurrentPageData().map((trainee) => {
                   // Debug logging for assignedTrainer
                   if (trainee.assignedTrainer) {
-                    console.log(`Trainee ${trainee.name} assignedTrainer:`, trainee.assignedTrainer, 'Type:', typeof trainee.assignedTrainer);
                   }
                   return (
                   <tr key={trainee.author_id} className="border-b border-gray-100 hover:bg-gray-50">
@@ -636,7 +633,6 @@ const AssignTrainees = () => {
                         <div className="space-y-2 p-4">
                           {filteredUnassignedTrainees.map((trainee) => {
                             const isSelected = selectedTrainees.includes(trainee.author_id);
-                            console.log(`Trainee ${trainee.name} (${trainee.author_id}) is selected:`, isSelected);
                             return (
                             <div
                               key={trainee.author_id}

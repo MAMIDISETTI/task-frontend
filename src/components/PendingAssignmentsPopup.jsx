@@ -27,7 +27,6 @@ const PendingAssignmentsPopup = ({ isOpen, onClose, onSuccess }) => {
     try {
       setLoading(true);
       const response = await axiosInstance.get(`${API_PATHS.JOINERS.GET_ALL}?status=pending&sortBy=joiningDate&sortOrder=asc&limit=1000`);
-      // console.log('Pending joiners API response:', response.data);
       const allJoiners = response.data.joiners || [];
       
       // Filter out joiners who already have user accounts
@@ -113,8 +112,6 @@ const PendingAssignmentsPopup = ({ isOpen, onClose, onSuccess }) => {
 
 
   // Debug logging
-  // console.log('Pending joiners state:', pendingJoiners);
-  // console.log('Filtered joiners:', filteredJoiners);
 
   if (!isOpen) return null;
 

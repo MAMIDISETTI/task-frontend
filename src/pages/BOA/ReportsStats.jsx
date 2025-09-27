@@ -98,7 +98,6 @@ const ReportsStats = () => {
       }
 
       const response = await axiosInstance.get(`${API_PATHS.RESULTS.STATISTICS}?${params.toString()}`);
-      console.log('Exam statistics response:', response.data);
       
       if (response.data.success) {
         setExamStats(response.data.statistics);
@@ -244,14 +243,11 @@ const ReportsStats = () => {
       }
 
       // Fetch trainees data
-      console.log('Fetching trainees data...');
       const traineesResponse = await axiosInstance.get(API_PATHS.USERS.LIST, {
         params: { role: 'trainee' }
       });
       
-      console.log('Trainees response:', traineesResponse.data);
       const trainees = traineesResponse.data.users || traineesResponse.data || [];
-      console.log('Processed trainees:', trainees);
       
       // Filter trainees by date range
       const filteredTrainees = trainees.filter(trainee => {
@@ -489,7 +485,6 @@ const ReportsStats = () => {
 
   const handleDownloadReport = (reportType) => {
     // Simulate download
-    console.log(`Downloading ${reportType} report for ${selectedPeriod}`);
   };
 
   if (loading) {

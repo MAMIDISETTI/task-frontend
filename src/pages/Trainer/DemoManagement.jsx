@@ -50,11 +50,8 @@ const TrainerDemoManagement = () => {
 
   const fetchPendingReviews = async () => {
     try {
-      console.log('Fetching pending reviews for trainer:', user);
       
       // Fetch demos from assigned trainees that are under review
-      console.log('Fetching pending reviews with user:', user);
-      console.log('Using trainerId:', user?.author_id || user?.id);
       
       // Try without trainerId first, let the backend determine from authenticated user
       const demosResponse = await axiosInstance.get(API_PATHS.DEMO.GET_ALL, {
@@ -64,10 +61,8 @@ const TrainerDemoManagement = () => {
       });
       
       if (demosResponse.data.success && demosResponse.data.demos) {
-        console.log('Fetched pending demos:', demosResponse.data.demos);
         setPendingReviews(demosResponse.data.demos);
       } else {
-        console.log('No pending demos found, using empty array');
         setPendingReviews([]);
       }
     } catch (error) {
@@ -79,7 +74,6 @@ const TrainerDemoManagement = () => {
 
   const fetchReviewedDemos = async () => {
     try {
-      console.log('Fetching reviewed demos for trainer:', user);
       
       // Fetch demos from assigned trainees that have been reviewed by this trainer
       // We need to get all demos and filter by trainerStatus on the frontend
@@ -90,31 +84,15 @@ const TrainerDemoManagement = () => {
       });
       
       if (demosResponse.data.success && demosResponse.data.demos) {
-        console.log('Fetched all demos for filtering:', demosResponse.data.demos);
-        
-        // Log each demo's trainerStatus for debugging
-        demosResponse.data.demos.forEach((demo, index) => {
-          console.log(`Demo ${index}:`, {
-            id: demo.id,
-            title: demo.title,
-            status: demo.status,
-            trainerStatus: demo.trainerStatus,
-            masterTrainerStatus: demo.masterTrainerStatus
-          });
-        });
         
         // Filter demos that have been reviewed by this trainer
         const reviewedDemos = demosResponse.data.demos.filter(demo => {
           const hasTrainerStatus = demo.trainerStatus === 'approved' || demo.trainerStatus === 'rejected';
-          console.log(`Demo ${demo.id} (${demo.title}): trainerStatus=${demo.trainerStatus}, hasTrainerStatus=${hasTrainerStatus}`);
           return hasTrainerStatus;
         });
         
-        console.log('Filtered reviewed demos:', reviewedDemos);
-        console.log('Number of reviewed demos:', reviewedDemos.length);
         setReviewedDemos(reviewedDemos);
       } else {
-        console.log('No reviewed demos found, using empty array');
         setReviewedDemos([]);
       }
     } catch (error) {
@@ -153,14 +131,6 @@ const TrainerDemoManagement = () => {
     }
 
     try {
-      console.log('Submitting review:', {
-        demoId: selectedDemo.demoId || selectedDemo.id,
-        action: reviewData.action,
-        rating: reviewData.rating,
-        feedback: reviewData.feedback,
-        trainerId: user?.author_id || user?.id
-      });
-
       // Make API call to update demo status
       const reviewPayload = {
         action: reviewData.action,
@@ -176,7 +146,6 @@ const TrainerDemoManagement = () => {
       );
 
       if (response.data.success) {
-        console.log('Review submitted successfully:', response.data);
         
         // Refresh data from server instead of local state manipulation
         await fetchPendingReviews();
@@ -195,8 +164,6 @@ const TrainerDemoManagement = () => {
 
   // Video viewing functions
   const openVideoModal = (demo) => {
-    console.log('Opening video modal for demo:', demo);
-    console.log('Video fileUrl:', demo.fileUrl);
     setSelectedVideo(demo);
     setShowVideoModal(true);
   };
@@ -670,12 +637,6 @@ const TrainerDemoManagement = () => {
                           onError={(e) => {
                             console.error('Video load error:', e);
                             console.error('Video src:', selectedVideo.fileUrl);
-                          }}
-                          onLoadStart={() => {
-                            console.log('Video loading started:', selectedVideo.fileUrl);
-                          }}
-                          onCanPlay={() => {
-                            console.log('Video can play:', selectedVideo.fileUrl);
                           }}
                         >
                           Your browser does not support the video tag.

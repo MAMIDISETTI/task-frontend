@@ -6,8 +6,6 @@ const TrainersPopup = ({ isOpen, onClose, trainers = [] }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredTrainers, setFilteredTrainers] = useState([]);
 
-  // Debug logging
-  console.log("TrainersPopup - isOpen:", isOpen, "trainers:", trainers);
 
   // Filter trainers based on search term
   useEffect(() => {

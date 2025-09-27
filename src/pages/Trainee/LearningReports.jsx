@@ -29,7 +29,6 @@ const LearningReports = () => {
         setLoading(true);
         // Fetch exam results for this trainee using the trainee-specific endpoint
         const response = await axiosInstance.get('/api/results/my-results');
-        console.log('Learning reports response:', response.data);
         
         if (response.data.results) {
           const results = response.data.results;
