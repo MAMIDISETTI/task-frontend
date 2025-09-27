@@ -649,7 +649,7 @@ const MasterTrainerDemoManagement = () => {
             <nav className="flex space-x-8 px-6 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('sessions')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'sessions'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -660,7 +660,7 @@ const MasterTrainerDemoManagement = () => {
               </button>
               <button
                 onClick={() => setActiveTab('feedback')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'feedback'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -671,7 +671,7 @@ const MasterTrainerDemoManagement = () => {
               </button>
               <button
                 onClick={() => setActiveTab('final-reviews')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'final-reviews'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -725,10 +725,10 @@ const MasterTrainerDemoManagement = () => {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <button className="px-3 py-1 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            <button className="px-3 py-1 text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer">
                               <LuDownload className="w-4 h-4" />
                             </button>
-                            <button className="px-3 py-1 text-green-600 hover:text-green-800 text-sm font-medium">
+                            <button className="px-3 py-1 text-green-600 hover:text-green-800 text-sm font-medium cursor-pointer">
                               <LuStar className="w-4 h-4" />
                             </button>
                           </div>
@@ -990,7 +990,7 @@ const MasterTrainerDemoManagement = () => {
                   <h3 className="text-xl font-bold text-gray-900">Record Observation</h3>
                   <button
                     onClick={() => setShowObservationModal(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   >
                     <LuX className="w-6 h-6" />
                   </button>
@@ -1075,13 +1075,13 @@ const MasterTrainerDemoManagement = () => {
                 <div className="flex justify-end space-x-3 mt-6">
                   <button
                     onClick={() => setShowObservationModal(false)}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmitObservation}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                   >
                     Record Observation
                   </button>
@@ -1100,7 +1100,7 @@ const MasterTrainerDemoManagement = () => {
                   <h3 className="text-xl font-bold text-gray-900">Allocate Campus</h3>
                   <button
                     onClick={() => setShowCampusModal(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   >
                     <LuX className="w-6 h-6" />
                   </button>
@@ -1172,13 +1172,13 @@ const MasterTrainerDemoManagement = () => {
                 <div className="flex justify-end space-x-3 mt-6">
                   <button
                     onClick={() => setShowCampusModal(false)}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmitCampusAllocation}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
                   >
                     Allocate Campus
                   </button>
@@ -1197,7 +1197,7 @@ const MasterTrainerDemoManagement = () => {
                   <h3 className="text-xl font-bold text-gray-900">Provide Feedback</h3>
                   <button
                     onClick={() => setShowFeedbackModal(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   >
                     <LuX className="w-6 h-6" />
                   </button>
@@ -1337,13 +1337,13 @@ const MasterTrainerDemoManagement = () => {
                 <div className="flex justify-end space-x-3 mt-6">
                   <button
                     onClick={() => setShowFeedbackModal(false)}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmitFeedback}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                   >
                     Submit Feedback
                   </button>
@@ -1362,7 +1362,7 @@ const MasterTrainerDemoManagement = () => {
                   <h3 className="text-xl font-bold text-gray-900">Final Review</h3>
                   <button
                     onClick={closeFinalReviewModal}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   >
                     <LuX className="w-6 h-6" />
                   </button>
@@ -1488,7 +1488,7 @@ const MasterTrainerDemoManagement = () => {
                   <h3 className="text-xl font-bold text-gray-900">Demo Video</h3>
                   <button
                     onClick={closeVideoModal}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   >
                     <LuX className="w-6 h-6" />
                   </button>

@@ -18,6 +18,7 @@ import {
   LuPencil, 
   LuTrash2, 
   LuTarget,
+  LuLoader,
   LuPlay
 } from 'react-icons/lu';
 import { UserContext } from '../../context/userContext';
@@ -47,6 +48,7 @@ const DemoManagement = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [campusAllocation, setCampusAllocation] = useState(null);
   const [feedback, setFeedback] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
   const [ratings, setRatings] = useState([]);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [selectedDemo, setSelectedDemo] = useState(null);
@@ -102,6 +104,8 @@ const DemoManagement = () => {
       toast.error('Please select a file to upload');
       return;
     }
+
+    setIsUploading(true);
 
     try {
       
@@ -169,6 +173,7 @@ const DemoManagement = () => {
         courseTag: ''
       });
       setShowUploadForm(false);
+      setIsUploading(false);
       
     } catch (error) {
       console.error('Error uploading demo:', error);
@@ -210,6 +215,8 @@ const DemoManagement = () => {
       setDemo_managements_details(prev => [newDemo, ...prev]);
       toast.success('Demo uploaded successfully (local storage)');
     }
+    
+    setIsUploading(false);
   };
 
   const fetchDemos = async () => {
@@ -433,7 +440,7 @@ const DemoManagement = () => {
             <nav className="flex space-x-8 px-6">
               <button
                 onClick={() => setActiveTab('online')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 cursor-pointer ${
                   activeTab === 'online'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -444,7 +451,7 @@ const DemoManagement = () => {
               </button>
               <button
                 onClick={() => setActiveTab('offline')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 cursor-pointer ${
                   activeTab === 'offline'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -455,7 +462,7 @@ const DemoManagement = () => {
               </button>
               <button
                 onClick={() => setActiveTab('feedback')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 cursor-pointer ${
                   activeTab === 'feedback'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -485,7 +492,7 @@ const DemoManagement = () => {
                     </div>
                     <button
                       onClick={() => setShowUploadForm(!showUploadForm)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 cursor-pointer"
                     >
                       <LuPlus className="w-4 h-4" />
                       <span>{showUploadForm ? 'Cancel' : 'New Upload'}</span>
@@ -560,15 +567,21 @@ const DemoManagement = () => {
                       <div className="flex justify-end space-x-3">
                         <button
                           onClick={() => setShowUploadForm(false)}
-                          className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                          className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                         >
                           Cancel
                         </button>
                         <button
                           onClick={handleUpload}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          disabled={isUploading}
+                          className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                            isUploading 
+                              ? 'bg-blue-400 text-white cursor-not-allowed' 
+                              : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+                          }`}
                         >
-                          Upload Demo
+                          {isUploading && <LuLoader className="w-4 h-4 animate-spin" />}
+                          {isUploading ? 'Uploading...' : 'Upload Demo'}
                         </button>
                       </div>
                     </div>
@@ -646,7 +659,7 @@ const DemoManagement = () => {
                               {demo.status !== 'approved' && demo.status !== 'review_complete' && (
                                 <button
                                   onClick={() => handleDelete(demo.id)}
-                                  className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                  className="p-1 text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
                                 >
                                   <LuX className="w-4 h-4" />
                                 </button>
@@ -688,14 +701,14 @@ const DemoManagement = () => {
                             <div className="flex items-center space-x-2">
                               <button
                                 onClick={() => openVideoModal(demo)}
-                                className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                                className="p-1 text-gray-400 hover:text-green-600 transition-colors cursor-pointer"
                                 title="View Video"
                               >
                                 <LuPlay className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => handleDownload(demo.id)}
-                                className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                className="p-1 text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
                                 title="Download"
                               >
                                 <LuDownload className="w-4 h-4" />
@@ -742,7 +755,7 @@ const DemoManagement = () => {
                   <h3 className="text-xl font-bold text-gray-900">{selectedVideo.title}</h3>
                   <button
                     onClick={closeVideoModal}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   >
                     <LuX className="w-6 h-6" />
                   </button>
@@ -852,7 +865,7 @@ const DemoManagement = () => {
                 <div className="flex justify-end space-x-3 pt-4 border-t mt-6">
                   <button
                     onClick={closeVideoModal}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     Close
                   </button>
@@ -864,7 +877,7 @@ const DemoManagement = () => {
                         link.download = selectedVideo.fileName || 'demo-video.mp4';
                         link.click();
                       }}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 cursor-pointer"
                     >
                       <LuDownload className="w-4 h-4" />
                       <span>Download</span>

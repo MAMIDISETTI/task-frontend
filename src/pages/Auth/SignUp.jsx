@@ -8,6 +8,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import { UserContext } from "../../context/userContext";
 import uploadImage from "../../utils/uploadImage";
+import { LuLoader } from "react-icons/lu";
 
 const SignUp = () => {
   const [profilePic, setProfilePic] = useState(null);
@@ -21,6 +22,7 @@ const SignUp = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const {updateUser} = useContext(UserContext)
   const navigate = useNavigate();
@@ -52,6 +54,7 @@ const SignUp = () => {
     }
 
     setError("");
+    setIsLoading(true);
 
     //SignUp API Call
     try {
@@ -106,6 +109,8 @@ const SignUp = () => {
       } else {
         setError("Something went wrong. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -127,7 +132,7 @@ const SignUp = () => {
             
             <button 
               onClick={handleGoToLogin}
-              className="btn-primary w-full"
+              className="btn-primary w-full cursor-pointer"
             >
               Go to Login
             </button>
@@ -192,13 +197,22 @@ const SignUp = () => {
 
               {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
 
-              <button type="submit" className="btn-primary">
-                SIGN UP
+              <button 
+                type="submit" 
+                disabled={isLoading}
+                className={`btn-primary flex items-center justify-center gap-2 ${
+                  isLoading 
+                    ? 'opacity-75 cursor-not-allowed' 
+                    : 'cursor-pointer'
+                }`}
+              >
+                {isLoading && <LuLoader className="w-5 h-5 animate-spin" />}
+                {isLoading ? 'Creating Account...' : 'SIGN UP'}
               </button>
 
               <p className="text-[13px] text-slate-800 mt-3">
                 Already an account?{" "}
-                <Link className="font-medium text-primary underline" to="/login">
+                <Link className="font-medium text-primary underline cursor-pointer" to="/login">
                   Login
                 </Link>
               </p>

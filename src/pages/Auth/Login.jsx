@@ -6,11 +6,13 @@ import { validateEmail } from "../../utils/helper";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import { UserContext } from "../../context/userContext";
+import { LuLoader } from "react-icons/lu";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Clear error when user starts typing
   const clearError = () => {
@@ -37,6 +39,7 @@ const Login = () => {
     }
 
     setError("");
+    setIsLoading(true);
 
     //Login API Call
     try {
@@ -73,6 +76,8 @@ const Login = () => {
       } else {
         setError("Something went wrong. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -121,17 +126,23 @@ const Login = () => {
       {/* Login Button */}
       <button
         type="submit"
-        className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 
-                   text-white font-semibold rounded-xl shadow-lg transition transform hover:scale-[1.02]"
+        disabled={isLoading}
+        className={`w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 
+                   text-white font-semibold rounded-xl shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center gap-2 ${
+                     isLoading 
+                       ? 'opacity-75 cursor-not-allowed' 
+                       : 'cursor-pointer'
+                   }`}
       >
-        LOGIN
+        {isLoading && <LuLoader className="w-5 h-5 animate-spin" />}
+        {isLoading ? 'Logging in...' : 'LOGIN'}
       </button>
 
       {/* Signup Link */}
       <p className="text-sm text-gray-700 mt-5 text-center">
         Don’t have an account?
         <Link
-          className="font-semibold text-indigo-600 hover:text-indigo-700 transition"
+          className="font-semibold text-indigo-600 hover:text-indigo-700 transition cursor-pointer"
           to="/signup"
         >
           Sign Up

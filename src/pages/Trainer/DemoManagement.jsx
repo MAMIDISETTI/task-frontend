@@ -188,7 +188,7 @@ const TrainerDemoManagement = () => {
             <nav className="flex space-x-8 px-6">
               <button
                 onClick={() => setActiveTab('reviews')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 cursor-pointer ${
                   activeTab === 'reviews'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -204,7 +204,7 @@ const TrainerDemoManagement = () => {
               </button>
               <button
                 onClick={() => setActiveTab('manage')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 cursor-pointer ${
                   activeTab === 'manage'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -282,14 +282,14 @@ const TrainerDemoManagement = () => {
                             <div className="flex items-center space-x-2">
                               <button
                                 onClick={() => openVideoModal(demo)}
-                                className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                                className="p-1 text-gray-400 hover:text-green-600 transition-colors cursor-pointer"
                                 title="View Video"
                               >
                                 <LuPlay className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => openReviewModal(demo)}
-                                className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+                                className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors cursor-pointer"
                               >
                                 Review
                               </button>
@@ -433,7 +433,7 @@ const TrainerDemoManagement = () => {
                             <div className="flex items-center space-x-2">
                               <button
                                 onClick={() => openVideoModal(demo)}
-                                className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                                className="p-1 text-gray-400 hover:text-green-600 transition-colors cursor-pointer"
                                 title="View Video"
                               >
                                 <LuPlay className="w-4 h-4" />
@@ -471,7 +471,7 @@ const TrainerDemoManagement = () => {
                   <h3 className="text-xl font-bold text-gray-900">Review Demo</h3>
                   <button
                     onClick={closeReviewModal}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   >
                     <LuX className="w-6 h-6" />
                   </button>
@@ -546,7 +546,7 @@ const TrainerDemoManagement = () => {
                           <button
                             key={star}
                             onClick={() => setReviewData(prev => ({ ...prev, rating: star }))}
-                            className="p-1"
+                            className="p-1 cursor-pointer"
                           >
                             <LuStar
                               className={`w-6 h-6 ${
@@ -579,13 +579,13 @@ const TrainerDemoManagement = () => {
                 <div className="flex justify-end space-x-3 pt-4 border-t mt-6">
                   <button
                     onClick={closeReviewModal}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleReviewSubmit}
-                    className={`px-4 py-2 text-white rounded-lg transition-colors flex items-center space-x-2 ${
+                    className={`px-4 py-2 text-white rounded-lg transition-colors flex items-center space-x-2 cursor-pointer ${
                       reviewData.action === 'approve' 
                         ? 'bg-green-600 hover:bg-green-700' 
                         : 'bg-red-600 hover:bg-red-700'
@@ -618,7 +618,7 @@ const TrainerDemoManagement = () => {
                   <h3 className="text-xl font-bold text-gray-900">{selectedVideo.title}</h3>
                   <button
                     onClick={closeVideoModal}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   >
                     <LuX className="w-6 h-6" />
                   </button>
@@ -685,7 +685,7 @@ const TrainerDemoManagement = () => {
                 <div className="flex justify-end space-x-3 pt-4 border-t mt-6">
                   <button
                     onClick={closeVideoModal}
-                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     Close
                   </button>
@@ -697,7 +697,7 @@ const TrainerDemoManagement = () => {
                         link.download = selectedVideo.fileName || 'demo-video.mp4';
                         link.click();
                       }}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 cursor-pointer"
                     >
                       <LuDownload className="w-4 h-4" />
                       <span>Download</span>

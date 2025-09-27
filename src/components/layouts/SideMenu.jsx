@@ -155,7 +155,7 @@ const SideMenu = ({ activeMenu, onMenuClick }) => {
           {item.hasSubmenu ? (
             <div>
               <button
-                className={`w-full flex items-center justify-between text-[15px] ${
+                className={`w-full flex items-center justify-between text-[15px] cursor-pointer ${
                   activeMenu == item.label
                     ? "text-primary bg-linear-to-r from-blue-50/40 to-blue-100/50 border-r-3"
                     : ""
@@ -193,7 +193,7 @@ const SideMenu = ({ activeMenu, onMenuClick }) => {
             </div>
           ) : (
             <button
-              className={`w-full flex items-center gap-4 text-[15px] ${
+                      className={`w-full flex items-center gap-4 text-[15px] cursor-pointer ${
                 activeMenu == item.label
                   ? "text-primary bg-linear-to-r from-blue-50/40 to-blue-100/50 border-r-3"
                   : ""

@@ -643,7 +643,7 @@ const BOADashboard = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 ml-5">
         <button
           onClick={() => setShowUploadPopup(true)}
-          className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer"
         >
           <LuUpload className="w-5 h-5" />
           <span>Upload New Joiners Data</span>
@@ -651,7 +651,7 @@ const BOADashboard = () => {
         
         <button
           onClick={() => setShowCalendar(!showCalendar)}
-          className="flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+          className="flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium cursor-pointer"
         >
           <LuCalendar className="w-5 h-5" />
           <span>{showCalendar ? 'Hide Calendar' : 'Show Calendar'}</span>
