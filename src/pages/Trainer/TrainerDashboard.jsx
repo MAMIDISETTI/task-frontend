@@ -145,7 +145,7 @@ const TrainerDashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <button
                 onClick={() => setShowTraineesPopup(true)}
-                className="group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
+                className="cursor-pointer group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
               >
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -163,7 +163,7 @@ const TrainerDashboard = () => {
               
               <button
                 onClick={() => window.location.href = '/trainer/day-plans'}
-                className="group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
+                className="cursor-pointer group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
               >
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -181,7 +181,7 @@ const TrainerDashboard = () => {
               
               <button
                 onClick={() => window.location.href = '/trainer/observations'}
-                className="group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
+                className="cursor-pointer group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
               >
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -217,7 +217,7 @@ const TrainerDashboard = () => {
                     </div>
                     <button 
                       onClick={() => setShowTraineesPopup(true)}
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                      className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       View All
                       <LuChevronRight className="w-4 h-4 ml-1" />
@@ -255,7 +255,7 @@ const TrainerDashboard = () => {
                       </div>
                       <h4 className="text-lg font-medium text-gray-900 mb-2">No assigned trainees</h4>
                       <p className="text-gray-500 mb-4">Contact your administrator to get trainees assigned to you</p>
-                      <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                      <button className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
                         <LuPlus className="w-4 h-4 mr-2" />
                         Request Assignment
                       </button>
@@ -288,7 +288,7 @@ const TrainerDashboard = () => {
                     <p className="text-xs text-gray-500 mb-4">Create your first day plan to get started</p>
                     <button 
                       onClick={() => window.location.href = '/trainer/day-plans'}
-                      className="inline-flex items-center px-3 py-2 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-colors"
+                      className="cursor-pointer inline-flex items-center px-3 py-2 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-colors"
                     >
                       <LuPlus className="w-3 h-3 mr-1" />
                       Create Plan

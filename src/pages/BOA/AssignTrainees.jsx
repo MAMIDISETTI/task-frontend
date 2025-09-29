@@ -766,6 +766,7 @@ const AssignTrainees = () => {
           isOpen={showTrainersPopup}
           onClose={() => setShowTrainersPopup(false)}
           trainers={trainers}
+          isLoading={loading}
         />
 
         <TraineesPopup
@@ -773,6 +774,7 @@ const AssignTrainees = () => {
           onClose={() => setShowTraineesPopup(false)}
           trainees={trainees}
           title="Total Trainees"
+          isLoading={loading}
         />
 
         <TraineesPopup
@@ -780,6 +782,7 @@ const AssignTrainees = () => {
           onClose={() => setShowAssignedTraineesPopup(false)}
           trainees={assignedTrainees}
           title="Assigned Trainees"
+          isLoading={loading}
         />
 
         <TraineesPopup
@@ -787,6 +790,7 @@ const AssignTrainees = () => {
           onClose={() => setShowUnassignedTraineesPopup(false)}
           trainees={unassignedTrainees}
           title="Unassigned Trainees"
+          isLoading={loading}
         />
       </div>
     </DashboardLayout>

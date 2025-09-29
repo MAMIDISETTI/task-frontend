@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { LuX, LuSearch, LuClock, LuUser, LuMail, LuIdCard } from 'react-icons/lu';
+import { LuX, LuSearch, LuClock, LuUser, LuMail, LuIdCard, LuLoader } from 'react-icons/lu';
 import moment from 'moment';
 
-const TrainersPopup = ({ isOpen, onClose, trainers = [] }) => {
+const TrainersPopup = ({ isOpen, onClose, trainers = [], isLoading = false }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredTrainers, setFilteredTrainers] = useState([]);
 
@@ -69,7 +69,15 @@ const TrainersPopup = ({ isOpen, onClose, trainers = [] }) => {
 
         {/* Trainers List */}
         <div className="flex-1 overflow-y-auto p-6 min-h-0">
-          {filteredTrainers.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="p-4 bg-gray-100 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                <LuLoader className="w-10 h-10 text-purple-500 animate-spin" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading Trainers...</h3>
+              <p className="text-gray-500 text-sm max-w-md mx-auto">Please wait while we fetch the trainer data.</p>
+            </div>
+          ) : filteredTrainers.length === 0 ? (
             <div className="text-center py-8">
               <LuUser className="w-12 h-12 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500">

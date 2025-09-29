@@ -21,62 +21,19 @@ import {
 const MasterTrainerObservations = () => {
   const { user } = useContext(UserContext);
   const [observations, setObservations] = useState([]);
-  const [trainees, setTrainees] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
-  const [showObservationModal, setShowObservationModal] = useState(false);
-  const [editingObservation, setEditingObservation] = useState(null);
-  const [observationForm, setObservationForm] = useState({
-    traineeId: '',
-    category: 'cultural',
-    title: '',
-    description: '',
-    behaviorType: 'positive',
-    severity: 'low',
-    impact: 'low',
-    recommendations: '',
-    followUpRequired: false,
-    followUpDate: ''
-  });
 
-  const categories = [
-    { value: 'cultural', label: 'Cultural Adaptation', color: 'bg-blue-100 text-blue-800' },
-    { value: 'behavioral', label: 'Behavioral', color: 'bg-green-100 text-green-800' },
-    { value: 'professional', label: 'Professional', color: 'bg-purple-100 text-purple-800' },
-    { value: 'technical', label: 'Technical', color: 'bg-orange-100 text-orange-800' },
-    { value: 'communication', label: 'Communication', color: 'bg-pink-100 text-pink-800' }
-  ];
-
-  const behaviorTypes = [
-    { value: 'positive', label: 'Positive', color: 'bg-green-100 text-green-800' },
-    { value: 'negative', label: 'Negative', color: 'bg-red-100 text-red-800' },
-    { value: 'neutral', label: 'Neutral', color: 'bg-gray-100 text-gray-800' }
-  ];
-
-  const severityLevels = [
-    { value: 'low', label: 'Low', color: 'bg-green-100 text-green-800' },
-    { value: 'medium', label: 'Medium', color: 'bg-yellow-100 text-yellow-800' },
-    { value: 'high', label: 'High', color: 'bg-red-100 text-red-800' }
-  ];
-
-  const impactLevels = [
-    { value: 'low', label: 'Low', color: 'bg-green-100 text-green-800' },
-    { value: 'medium', label: 'Medium', color: 'bg-yellow-100 text-yellow-800' },
-    { value: 'high', label: 'High', color: 'bg-red-100 text-red-800' }
-  ];
 
   useEffect(() => {
     fetchObservations();
-    fetchTrainees();
   }, []);
 
   const fetchObservations = async () => {
     try {
-      const response = await axiosInstance.get(API_PATHS.OBSERVATIONS.GET_ALL, {
-        params: { role: 'master_trainer' }
-      });
-      if (response.data.success) {
+      const response = await axiosInstance.get(API_PATHS.OBSERVATIONS.GET_MASTER_TRAINER);
+      if (response.data.observations) {
         setObservations(response.data.observations);
       } else {
         setObservations([]);
@@ -87,99 +44,21 @@ const MasterTrainerObservations = () => {
     }
   };
 
-  const fetchTrainees = async () => {
-    try {
-      const response = await axiosInstance.get(API_PATHS.USERS.GET_ALL, {
-        params: { role: 'trainee' }
-      });
-      if (response.data.success) {
-        setTrainees(response.data.users);
-      } else {
-        setTrainees([]);
-      }
-    } catch (error) {
-      console.error('Error fetching trainees:', error);
-      setTrainees([]);
-    }
-  };
-
-  const handleSubmitObservation = async (e) => {
-    e.preventDefault();
-    try {
-      const response = editingObservation 
-        ? await axiosInstance.put(API_PATHS.OBSERVATIONS.UPDATE(editingObservation.id), observationForm)
-        : await axiosInstance.post(API_PATHS.OBSERVATIONS.CREATE, observationForm);
-
-      if (response.data.success) {
-        fetchObservations();
-        resetForm();
-        setShowObservationModal(false);
-      }
-    } catch (error) {
-      console.error('Error saving observation:', error);
-    }
-  };
-
-  const handleEditObservation = (observation) => {
-    setEditingObservation(observation);
-    setObservationForm({
-      traineeId: observation.traineeId,
-      category: observation.category,
-      title: observation.title,
-      description: observation.description,
-      behaviorType: observation.behaviorType,
-      severity: observation.severity,
-      impact: observation.impact,
-      recommendations: observation.recommendations,
-      followUpRequired: observation.followUpRequired,
-      followUpDate: observation.followUpDate ? new Date(observation.followUpDate).toISOString().split('T')[0] : ''
-    });
-    setShowObservationModal(true);
-  };
-
-  const handleDeleteObservation = async (observationId) => {
-    if (window.confirm('Are you sure you want to delete this observation?')) {
-      try {
-        const response = await axiosInstance.delete(API_PATHS.OBSERVATIONS.DELETE(observationId));
-        if (response.data.success) {
-          fetchObservations();
-        }
-      } catch (error) {
-        console.error('Error deleting observation:', error);
-      }
-    }
-  };
-
-  const resetForm = () => {
-    setObservationForm({
-      traineeId: '',
-      category: 'cultural',
-      title: '',
-      description: '',
-      behaviorType: 'positive',
-      severity: 'low',
-      impact: 'low',
-      recommendations: '',
-      followUpRequired: false,
-      followUpDate: ''
-    });
-    setEditingObservation(null);
+  const handleReviewObservation = (observation) => {
+    // TODO: Implement review functionality
+    console.log('Review observation:', observation);
   };
 
   const filteredObservations = observations.filter(observation => {
-    const matchesSearch = observation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         observation.traineeName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterCategory === 'all' || observation.category === filterCategory;
+    const traineeName = observation.trainee?.name || 'Unknown Trainee';
+    const trainerName = observation.trainer?.name || 'Unknown Trainer';
+    const matchesSearch = traineeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         trainerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         observation.overallRating?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterCategory === 'all' || observation.overallRating === filterCategory;
     return matchesSearch && matchesFilter;
   });
 
-  const getCategoryInfo = (category) => {
-    return categories.find(c => c.value === category) || categories[0];
-  };
-
-  const getBehaviorTypeInfo = (behaviorType) => {
-    return behaviorTypes.find(b => b.value === behaviorType) || behaviorTypes[0];
-  };
 
   return (
     <DashboardLayout activeMenu="Observations">
@@ -189,63 +68,85 @@ const MasterTrainerObservations = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Cultural & Behavioral Observations</h1>
-              <p className="text-gray-600 mt-1">Track and manage trainee cultural adaptation and behavioral patterns</p>
+              <p className="text-gray-600 mt-1">Review and manage trainee observations submitted by trainers</p>
             </div>
-            <button
-              onClick={() => setShowObservationModal(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
-            >
-              <LuPlus className="w-4 h-4 mr-2" />
-              New Observation
-            </button>
           </div>
         </div>
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {categories.map((category) => {
-            const count = observations.filter(o => o.category === category.value).length;
-            return (
-              <div key={category.value} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">{category.label}</p>
-                    <p className="text-2xl font-bold text-gray-900">{count}</p>
-                  </div>
-                  <div className={`p-2 rounded-lg ${category.color}`}>
-                    <LuEye className="w-6 h-6" />
-                  </div>
-                </div>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Observations</p>
+                <p className="text-2xl font-bold text-gray-900">{observations.length}</p>
               </div>
-            );
-          })}
+              <div className="p-2 rounded-lg bg-blue-100 text-blue-800">
+                <LuEye className="w-6 h-6" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Draft</p>
+                <p className="text-2xl font-bold text-gray-900">{observations.filter(o => o.status === 'draft').length}</p>
+              </div>
+              <div className="p-2 rounded-lg bg-gray-100 text-gray-800">
+                <LuFileText className="w-6 h-6" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Submitted</p>
+                <p className="text-2xl font-bold text-gray-900">{observations.filter(o => o.status === 'submitted').length}</p>
+              </div>
+              <div className="p-2 rounded-lg bg-yellow-100 text-yellow-800">
+                <LuCheck className="w-6 h-6" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Reviewed</p>
+                <p className="text-2xl font-bold text-gray-900">{observations.filter(o => o.status === 'reviewed').length}</p>
+              </div>
+              <div className="p-2 rounded-lg bg-green-100 text-green-800">
+                <LuStar className="w-6 h-6" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Controls */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              <div className="relative">
-                <LuSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
+            <div className="relative">
+              <LuSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
                   placeholder="Search observations..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              />
+            </div>
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
                 className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="all">All Categories</option>
-                {categories.map((category) => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
+                <option value="all">All Status</option>
+                <option value="draft">Draft</option>
+                <option value="submitted">Submitted</option>
+                <option value="reviewed">Reviewed</option>
               </select>
             </div>
           </div>
@@ -255,63 +156,144 @@ const MasterTrainerObservations = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">Observations ({filteredObservations.length})</h2>
-          </div>
+            </div>
           <div className="divide-y divide-gray-200">
             {filteredObservations.map((observation) => {
-              const categoryInfo = getCategoryInfo(observation.category);
-              const behaviorInfo = getBehaviorTypeInfo(observation.behaviorType);
+              const traineeName = observation.trainee?.name || 'Unknown Trainee';
+              const trainerName = observation.trainer?.name || 'Unknown Trainer';
+              const statusColor = observation.status === 'draft' ? 'bg-gray-100 text-gray-800' :
+                                observation.status === 'submitted' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-green-100 text-green-800';
               
               return (
-                <div key={observation.id} className="p-6 hover:bg-gray-50">
+                <div key={observation._id} className="p-6 hover:bg-gray-50">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-medium text-gray-900">{observation.title}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryInfo.color}`}>
-                          {categoryInfo.label}
+                        <h3 className="text-lg font-medium text-gray-900">
+                          Observation Report - {traineeName}
+                        </h3>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColor}`}>
+                          {observation.status?.charAt(0).toUpperCase() + observation.status?.slice(1)}
                         </span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${behaviorInfo.color}`}>
-                          {behaviorInfo.label}
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {observation.overallRating?.charAt(0).toUpperCase() + observation.overallRating?.slice(1)}
                         </span>
                       </div>
                       <div className="flex items-center gap-4 text-sm text-gray-500 mb-2">
                         <span className="flex items-center gap-1">
                           <LuUser className="w-4 h-4" />
-                          {observation.traineeName}
+                          Trainee: {traineeName}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <LuUser className="w-4 h-4" />
+                          Trainer: {trainerName}
                         </span>
                         <span className="flex items-center gap-1">
                           <LuCalendar className="w-4 h-4" />
-                          {new Date(observation.createdAt).toLocaleDateString()}
+                          {new Date(observation.date).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-gray-700 mb-3">{observation.description}</p>
-                      {observation.recommendations && (
-                        <div className="bg-blue-50 p-3 rounded-lg mb-3">
-                          <p className="text-sm text-blue-800">
-                            <strong>Recommendations:</strong> {observation.recommendations}
-                          </p>
+                      
+                      {/* Culture & Behavior Ratings */}
+                      <div className="grid grid-cols-2 gap-4 mb-3">
+                        <div className="bg-gray-50 p-3 rounded-lg">
+                          <h4 className="font-medium text-sm text-gray-700 mb-2">Culture & Behavior</h4>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span>Communication:</span>
+                              <span className="font-medium">{observation.culture?.communication}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Teamwork:</span>
+                              <span className="font-medium">{observation.culture?.teamwork}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Discipline:</span>
+                              <span className="font-medium">{observation.culture?.discipline}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Attitude:</span>
+                              <span className="font-medium">{observation.culture?.attitude}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-gray-50 p-3 rounded-lg">
+                          <h4 className="font-medium text-sm text-gray-700 mb-2">Grooming</h4>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span>Dress Code:</span>
+                              <span className="font-medium">{observation.grooming?.dressCode}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Neatness:</span>
+                              <span className="font-medium">{observation.grooming?.neatness}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Punctuality:</span>
+                              <span className="font-medium">{observation.grooming?.punctuality}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Strengths and Areas for Improvement */}
+                      {(observation.strengths?.length > 0 || observation.areasForImprovement?.length > 0) && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                          {observation.strengths?.length > 0 && (
+                            <div className="bg-green-50 p-3 rounded-lg">
+                              <h4 className="font-medium text-sm text-green-800 mb-2">Strengths</h4>
+                              <ul className="text-sm text-green-700">
+                                {observation.strengths.map((strength, index) => (
+                                  <li key={index} className="flex items-center gap-1">
+                                    <span className="w-1 h-1 bg-green-600 rounded-full"></span>
+                                    {strength}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          {observation.areasForImprovement?.length > 0 && (
+                            <div className="bg-orange-50 p-3 rounded-lg">
+                              <h4 className="font-medium text-sm text-orange-800 mb-2">Areas for Improvement</h4>
+                              <ul className="text-sm text-orange-700">
+                                {observation.areasForImprovement.map((area, index) => (
+                                  <li key={index} className="flex items-center gap-1">
+                                    <span className="w-1 h-1 bg-orange-600 rounded-full"></span>
+                                    {area}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </div>
                       )}
-                      {observation.followUpRequired && (
-                        <div className="bg-yellow-50 p-3 rounded-lg">
-                          <p className="text-sm text-yellow-800">
-                            <strong>Follow-up Required:</strong> {new Date(observation.followUpDate).toLocaleDateString()}
-                          </p>
+                      
+                      {/* Recommendations */}
+                      {observation.recommendations && (
+                        <div className="bg-blue-50 p-3 rounded-lg mb-3">
+                          <h4 className="font-medium text-sm text-blue-800 mb-1">Recommendations</h4>
+                          <p className="text-sm text-blue-700">{observation.recommendations}</p>
+                        </div>
+                      )}
+                      
+                      {/* Master Trainer Notes */}
+                      {observation.masterTrainerNotes && (
+                        <div className="bg-purple-50 p-3 rounded-lg">
+                          <h4 className="font-medium text-sm text-purple-800 mb-1">Master Trainer Notes</h4>
+                          <p className="text-sm text-purple-700">{observation.masterTrainerNotes}</p>
                         </div>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleEditObservation(observation)}
-                        className="p-2 text-blue-600 hover:text-blue-800"
+                        onClick={() => handleReviewObservation(observation)}
+                        className="p-2 text-blue-600 hover:text-blue-800 cursor-pointer"
+                        title="Review Observation"
                       >
-                        <LuPencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteObservation(observation.id)}
-                        className="p-2 text-red-600 hover:text-red-800"
-                      >
-                        <LuTrash2 className="w-4 h-4" />
+                        <LuEye className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -321,209 +303,6 @@ const MasterTrainerObservations = () => {
           </div>
         </div>
 
-        {/* Observation Modal */}
-        {showObservationModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-gray-900">
-                    {editingObservation ? 'Edit Observation' : 'New Observation'}
-                  </h2>
-                  <button
-                    onClick={() => {
-                      setShowObservationModal(false);
-                      resetForm();
-                    }}
-                    className="text-gray-400 hover:text-gray-600"
-                  >
-                    <LuX className="w-6 h-6" />
-                  </button>
-                </div>
-
-                <form onSubmit={handleSubmitObservation} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Trainee
-                      </label>
-                      <select
-                        value={observationForm.traineeId}
-                        onChange={(e) => setObservationForm({ ...observationForm, traineeId: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      >
-                        <option value="">Select Trainee</option>
-                        {trainees.map((trainee) => (
-                          <option key={trainee.id} value={trainee.id}>
-                            {trainee.name} ({trainee.employeeId})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Category
-                      </label>
-                      <select
-                        value={observationForm.category}
-                        onChange={(e) => setObservationForm({ ...observationForm, category: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                      >
-                        {categories.map((category) => (
-                          <option key={category.value} value={category.value}>
-                            {category.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Title
-                    </label>
-                    <input
-                      type="text"
-                      value={observationForm.title}
-                      onChange={(e) => setObservationForm({ ...observationForm, title: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Brief title for the observation"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
-                    </label>
-                    <textarea
-                      value={observationForm.description}
-                      onChange={(e) => setObservationForm({ ...observationForm, description: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      rows={4}
-                      placeholder="Detailed description of the observation"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Behavior Type
-                      </label>
-                      <select
-                        value={observationForm.behaviorType}
-                        onChange={(e) => setObservationForm({ ...observationForm, behaviorType: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        {behaviorTypes.map((type) => (
-                          <option key={type.value} value={type.value}>
-                            {type.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Severity
-                      </label>
-                      <select
-                        value={observationForm.severity}
-                        onChange={(e) => setObservationForm({ ...observationForm, severity: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        {severityLevels.map((level) => (
-                          <option key={level.value} value={level.value}>
-                            {level.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Impact
-                      </label>
-                      <select
-                        value={observationForm.impact}
-                        onChange={(e) => setObservationForm({ ...observationForm, impact: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        {impactLevels.map((level) => (
-                          <option key={level.value} value={level.value}>
-                            {level.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Recommendations
-                    </label>
-                    <textarea
-                      value={observationForm.recommendations}
-                      onChange={(e) => setObservationForm({ ...observationForm, recommendations: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      rows={3}
-                      placeholder="Recommendations for improvement or continuation"
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={observationForm.followUpRequired}
-                        onChange={(e) => setObservationForm({ ...observationForm, followUpRequired: e.target.checked })}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">Follow-up Required</span>
-                    </label>
-                  </div>
-
-                  {observationForm.followUpRequired && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Follow-up Date
-                      </label>
-                      <input
-                        type="date"
-                        value={observationForm.followUpDate}
-                        onChange={(e) => setObservationForm({ ...observationForm, followUpDate: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  )}
-
-                  <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowObservationModal(false);
-                        resetForm();
-                      }}
-                      className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    >
-                      {editingObservation ? 'Update' : 'Create'} Observation
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </DashboardLayout>
   );

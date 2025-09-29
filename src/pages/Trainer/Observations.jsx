@@ -5,7 +5,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import moment from "moment";
 import { toast } from "react-hot-toast";
-import { LuPlus, LuPencil, LuEye, LuUsers, LuCalendar } from "react-icons/lu";
+import { LuPlus, LuPencil, LuEye, LuUsers, LuCalendar, LuLoader } from "react-icons/lu";
 
 const Observations = () => {
   const { user } = useContext(UserContext);
@@ -14,6 +14,7 @@ const Observations = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingObservation, setEditingObservation] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -80,6 +81,7 @@ const Observations = () => {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       if (editingObservation) {
         await axiosInstance.put(API_PATHS.OBSERVATIONS.UPDATE(editingObservation._id), formData);
@@ -96,6 +98,8 @@ const Observations = () => {
     } catch (err) {
       const msg = err?.response?.data?.message || "Failed to save observation";
       toast.error(msg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -234,7 +238,7 @@ const Observations = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-medium">Trainee Observations</h2>
           <button 
-            className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+            className="cursor-pointer flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
             onClick={() => {
               setEditingObservation(null);
               setShowCreateForm(true);
@@ -498,7 +502,7 @@ const Observations = () => {
                 <button
                   type="button"
                   onClick={addStrength}
-                  className="text-sm text-blue-600 hover:text-blue-800"
+                  className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer"
                 >
                   + Add Strength
                 </button>
@@ -531,7 +535,7 @@ const Observations = () => {
                 <button
                   type="button"
                   onClick={addAreaForImprovement}
-                  className="text-sm text-blue-600 hover:text-blue-800"
+                  className="text-sm text-blue-600 hover:text-blue-800 cursor-pointer"
                 >
                   + Add Area
                 </button>
@@ -549,7 +553,7 @@ const Observations = () => {
                   <button
                     type="button"
                     onClick={() => removeAreaForImprovement(index)}
-                    className="p-2 text-red-600 hover:text-red-800"
+                    className="p-2 text-red-600 hover:text-red-800 cursor-pointer"
                   >
                     Remove
                   </button>
@@ -572,9 +576,21 @@ const Observations = () => {
             <div className="flex gap-3">
               <button 
                 type="submit" 
-                className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+                disabled={isSubmitting}
+                className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-colors font-medium cursor-pointer ${
+                  isSubmitting 
+                    ? 'bg-blue-400 text-white opacity-75 cursor-not-allowed' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
               >
-                <span>{editingObservation ? "Update" : "Create"} Observation</span>
+                {isSubmitting ? (
+                  <>
+                    <LuLoader className="w-4 h-4 animate-spin" />
+                    <span>{editingObservation ? "Updating..." : "Creating..."} Observation</span>
+                  </>
+                ) : (
+                  <span>{editingObservation ? "Update" : "Create"} Observation</span>
+                )}
               </button>
               <button 
                 type="button" 
@@ -583,7 +599,7 @@ const Observations = () => {
                   setEditingObservation(null);
                   resetForm();
                 }}
-                className="flex items-center justify-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+                className="flex items-center justify-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg transition-colors font-medium cursor-pointer"
               >
                 <span>Cancel</span>
               </button>
@@ -652,7 +668,7 @@ const Observations = () => {
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleEdit(obs)}
-                        className="p-2 text-blue-600 hover:text-blue-800"
+                        className="p-2 text-blue-600 hover:text-blue-800 cursor-pointer"
                         title="Edit"
                       >
                         <LuPencil />
@@ -661,7 +677,7 @@ const Observations = () => {
                       {obs.status === 'draft' && (
                         <button
                           onClick={() => handleSubmitObservation(obs._id)}
-                          className="p-2 text-green-600 hover:text-green-800"
+                          className="p-2 text-green-600 hover:text-green-800 cursor-pointer"
                           title="Submit"
                         >
                           <LuEye />

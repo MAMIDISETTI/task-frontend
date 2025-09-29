@@ -323,8 +323,8 @@ const ReportsStats = () => {
         return {
           trainer: trainer.name,
           trainees: assignedTrainees,
-          maxCapacity: 10, // Default max capacity
-          utilization: Math.round((assignedTrainees / 10) * 100)
+          maxCapacity: 50, // Default max capacity
+          utilization: Math.round((assignedTrainees / 50) * 100)
         };
       });
 
@@ -507,7 +507,7 @@ const ReportsStats = () => {
             <div className="relative flex items-center space-x-2 date-picker-container">
               <button
                 onClick={() => setShowDatePicker(!showDatePicker)}
-                className="flex items-center space-x-2 border border-gray-300 rounded-lg px-3 py-2 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                className="cursor-pointer flex items-center space-x-2 border border-gray-300 rounded-lg px-3 py-2 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               >
                 <LuCalendar className="w-4 h-4 text-gray-400" />
                 <span className="text-sm text-gray-700">
@@ -535,7 +535,7 @@ const ReportsStats = () => {
                               handlePeriodChange(period.value);
                               setShowDatePicker(false);
                             }}
-                            className={`px-3 py-2 text-xs rounded-lg border transition-colors ${
+                            className={`cursor-pointer px-3 py-2 text-xs rounded-lg border transition-colors ${
                               selectedPeriod === period.value
                                 ? 'bg-blue-100 border-blue-300 text-blue-700'
                                 : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
@@ -574,7 +574,7 @@ const ReportsStats = () => {
                             setSelectedPeriod('custom');
                             setShowDatePicker(false);
                           }}
-                          className="w-full px-3 py-2 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+                          className="cursor-pointer w-full px-3 py-2 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
                         >
                           Apply Custom Range
                         </button>
@@ -584,7 +584,7 @@ const ReportsStats = () => {
                     <div className="flex justify-end space-x-2 pt-2 border-t">
                       <button
                         onClick={() => setShowDatePicker(false)}
-                        className="px-3 py-1 text-xs text-gray-600 hover:text-gray-800"
+                        className="cursor-pointer px-3 py-1 text-xs text-gray-600 hover:text-gray-800"
                       >
                         Cancel
                       </button>
@@ -599,7 +599,7 @@ const ReportsStats = () => {
               <button
                 onClick={fetchData}
                 disabled={loading}
-                className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+                className="cursor-pointer flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
               >
                 <LuFilter className="w-4 h-4" />
                 <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
@@ -607,7 +607,7 @@ const ReportsStats = () => {
               
               <button
                 onClick={() => handleDownloadReport(selectedReport)}
-                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="cursor-pointer flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <LuDownload className="w-4 h-4" />
                 <span>Download Report</span>
@@ -626,7 +626,7 @@ const ReportsStats = () => {
                   <button
                     key={report.value}
                     onClick={() => setSelectedReport(report.value)}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap ${
+                    className={`cursor-pointer py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap ${
                       selectedReport === report.value
                         ? 'border-blue-500 text-blue-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'

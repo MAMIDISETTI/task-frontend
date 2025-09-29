@@ -159,7 +159,7 @@ const UploadResultsPopup = ({ isOpen, onClose, onSuccess, examType }) => {
           </div>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
           >
             <LuX className="w-5 h-5 text-gray-500" />
           </button>
@@ -216,7 +216,7 @@ const UploadResultsPopup = ({ isOpen, onClose, onSuccess, examType }) => {
                 <button
                   onClick={handleValidateSheets}
                   disabled={!jsonData.spread_sheet_name || !jsonData.data_sets_to_be_loaded || validating}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                  className="cursor-pointer px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
                 >
                   {validating ? (
                     <>
@@ -320,14 +320,14 @@ const UploadResultsPopup = ({ isOpen, onClose, onSuccess, examType }) => {
               <div className="flex justify-between">
                 <button
                   onClick={() => setCurrentStep(1)}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="cursor-pointer px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Back to Configuration
                 </button>
                 <button
                   onClick={handleUploadData}
                   disabled={resultsData.length === 0 || loading}
-                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                  className="cursor-pointer px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
                 >
                   {loading ? (
                     <>

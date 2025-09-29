@@ -15,7 +15,8 @@ import {
   LuFileText,
   LuX,
   LuClock3,
-  LuPencil
+  LuPencil,
+  LuLoader
 } from 'react-icons/lu';
 import { UserContext } from '../../context/userContext';
 import moment from 'moment';
@@ -46,11 +47,15 @@ const TraineeMainDashboard = () => {
   const [expandedTasks, setExpandedTasks] = useState({});
   const [taskStatuses, setTaskStatuses] = useState({});
   const [taskRemarks, setTaskRemarks] = useState({});
+  const [isSubmittingDayPlan, setIsSubmittingDayPlan] = useState(false);
+  const [isUpdatingEod, setIsUpdatingEod] = useState(false);
+  const [isLoadingDayPlans, setIsLoadingDayPlans] = useState(true);
 
 
   // Load submitted day plans from backend
   useEffect(() => {
     const fetchSubmittedDayPlans = async () => {
+      setIsLoadingDayPlans(true);
       try {
         const response = await axiosInstance.get(API_PATHS.TRAINEE_DAY_PLANS.GET_ALL);
         if (response.data.dayPlans) {
@@ -86,6 +91,8 @@ const TraineeMainDashboard = () => {
       } catch (error) {
         console.error('Error fetching submitted day plans:', error);
         // Don't show error to user as this is background loading
+      } finally {
+        setIsLoadingDayPlans(false);
       }
     };
 
@@ -395,6 +402,8 @@ const TraineeMainDashboard = () => {
       return;
     }
 
+    setIsSubmittingDayPlan(true);
+
     try {
       // Submit to backend
       const response = await axiosInstance.post(API_PATHS.TRAINEE_DAY_PLANS.CREATE, {
@@ -432,6 +441,8 @@ const TraineeMainDashboard = () => {
       } else {
         toast.error('Failed to submit day plan. Please try again.');
       }
+    } finally {
+      setIsSubmittingDayPlan(false);
     }
   };
 
@@ -498,6 +509,8 @@ const TraineeMainDashboard = () => {
       return;
     }
 
+    setIsUpdatingEod(true);
+
     try {
       // Prepare task updates
       const taskUpdates = [];
@@ -545,6 +558,8 @@ const TraineeMainDashboard = () => {
       } else {
         toast.error('Failed to update EOD status. Please try again.');
       }
+    } finally {
+      setIsUpdatingEod(false);
     }
   };
 
@@ -573,7 +588,7 @@ const TraineeMainDashboard = () => {
                 {dayPlan.tasks.length > 1 && (
                   <button
                     onClick={() => handleRemoveTask(task.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 cursor-pointer"
                   >
                     <LuX className="w-4 h-4" />
                   </button>
@@ -617,7 +632,7 @@ const TraineeMainDashboard = () => {
                   <label className="block text-sm font-medium text-gray-700">Checkboxes</label>
                   <button
                     onClick={() => handleAddCheckbox(task.id)}
-                    className="px-3 py-1 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-1"
+                    className="cursor-pointer px-3 py-1 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center space-x-1"
                   >
                     <LuPlus className="w-3 h-3" />
                     <span>Add</span>
@@ -670,7 +685,7 @@ const TraineeMainDashboard = () => {
                       </div>
                       <button
                         onClick={() => handleRemoveCheckbox(task.id, checkbox.id)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 cursor-pointer"
                       >
                         <LuX className="w-4 h-4" />
                       </button>
@@ -695,7 +710,7 @@ const TraineeMainDashboard = () => {
           
           <button
             onClick={handleAddTask}
-            className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-500 transition-colors flex items-center justify-center space-x-2"
+            className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-500 transition-colors flex items-center justify-center space-x-2 cursor-pointer"
           >
             <LuPlus className="w-4 h-4" />
             <span>Add Another Task</span>
@@ -706,7 +721,7 @@ const TraineeMainDashboard = () => {
           {isEditing && (
             <button
               onClick={handleCancelEdit}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2"
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2 cursor-pointer"
             >
               <LuX className="w-4 h-4" />
               <span>Cancel</span>
@@ -715,7 +730,7 @@ const TraineeMainDashboard = () => {
           
           <button
             onClick={handleSaveDayPlan}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2"
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2 cursor-pointer"
           >
             <LuSave className="w-4 h-4" />
             <span>Save as Draft</span>
@@ -723,10 +738,21 @@ const TraineeMainDashboard = () => {
           
           <button
             onClick={handleSubmitDayPlan}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+            disabled={isSubmittingDayPlan}
+            className={`cursor-pointer px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 ${
+              isSubmittingDayPlan 
+                ? 'opacity-75 cursor-not-allowed' 
+                : 'cursor-pointer'
+            }`}
           >
-            <LuCheck className="w-4 h-4" />
-            <span>{isEditing ? 'Update Day Plan' : 'Submit Day Plan'}</span>
+            {isSubmittingDayPlan && <LuLoader className="w-4 h-4 animate-spin" />}
+            {!isSubmittingDayPlan && <LuCheck className="w-4 h-4" />}
+            <span>
+              {isSubmittingDayPlan 
+                ? (isEditing ? 'Updating...' : 'Submitting...') 
+                : (isEditing ? 'Update Day Plan' : 'Submit Day Plan')
+              }
+            </span>
           </button>
         </div>
       </div>
@@ -734,7 +760,15 @@ const TraineeMainDashboard = () => {
       {/* Previous Day Plans */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Previous Day Plans</h3>
-        {submittedDayPlans.length > 0 ? (
+        {isLoadingDayPlans ? (
+          <div className="text-center py-12">
+            <div className="p-4 bg-gray-100 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+              <LuLoader className="w-10 h-10 text-blue-500 animate-spin" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading Day Plans...</h3>
+            <p className="text-gray-500 text-sm max-w-md mx-auto">Please wait while we fetch your submitted day plans.</p>
+          </div>
+        ) : submittedDayPlans.length > 0 ? (
         <div className="space-y-2">
             {submittedDayPlans.map((plan) => (
               <div key={plan.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -770,7 +804,7 @@ const TraineeMainDashboard = () => {
                   <div className="flex items-center space-x-2">
                     <button 
                       onClick={() => handleViewDayPlan(plan)}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center space-x-1"
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center space-x-1 cursor-pointer"
                     >
                 <LuEye className="w-4 h-4" />
                 <span>View</span>
@@ -778,7 +812,7 @@ const TraineeMainDashboard = () => {
                     {plan.status === 'in_progress' && (
                       <button 
                         onClick={() => handleEditDayPlan(plan)}
-                        className="text-green-600 hover:text-green-800 text-sm font-medium flex items-center space-x-1"
+                        className="text-green-600 hover:text-green-800 text-sm font-medium flex items-center space-x-1 cursor-pointer"
                       >
                         <LuPencil className="w-4 h-4" />
                         <span>Edit</span>
@@ -794,8 +828,8 @@ const TraineeMainDashboard = () => {
             <div className="p-4 bg-gray-100 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center">
               <LuFileText className="w-10 h-10 text-gray-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No approved tasks for today</h3>
-            <p className="text-gray-500 text-sm max-w-md mx-auto">Approved day plans and assigned tasks will appear here. Check back after your trainer approves your submitted day plan.</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Day Plans Found</h3>
+            <p className="text-gray-500 text-sm max-w-md mx-auto">You haven't submitted any day plans yet. Create and submit your first day plan above!</p>
           </div>
         )}
       </div>
@@ -1175,13 +1209,22 @@ const TraineeMainDashboard = () => {
               {!isEodApproved && !isEodRejected && (
           <button
             onClick={handleEodUpdate}
-            className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+            disabled={isUpdatingEod}
+            className={`w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2 ${
+              isUpdatingEod 
+                ? 'opacity-75 cursor-not-allowed' 
+                : 'cursor-pointer'
+            }`}
           >
-            <LuCheck className="w-4 h-4" />
-                  <span>
-                    {isEodPending ? 'EOD Submitted - Pending Review' : 
-                     isEditingEod ? 'Update EOD' : 'Submit EOD Update'}
-                  </span>
+            {isUpdatingEod && <LuLoader className="w-4 h-4 animate-spin" />}
+            {!isUpdatingEod && <LuCheck className="w-4 h-4" />}
+            <span>
+              {isUpdatingEod 
+                ? 'Updating EOD...' 
+                : (isEodPending ? 'EOD Submitted - Pending Review' : 
+                   isEditingEod ? 'Update EOD' : 'Submit EOD Update')
+              }
+            </span>
           </button>
               )}
         </div>
@@ -1359,7 +1402,7 @@ const TraineeMainDashboard = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                    className={`cursor-pointerpy-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
                       activeTab === tab.id
                         ? 'border-blue-500 text-blue-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -1392,7 +1435,7 @@ const TraineeMainDashboard = () => {
               </h3>
               <button
                 onClick={() => setShowViewPopup(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 cursor-pointer"
               >
                 <LuX className="w-6 h-6" />
               </button>
@@ -1482,7 +1525,7 @@ const TraineeMainDashboard = () => {
               {selectedDayPlan.status === 'in_progress' && (
                 <button
                   onClick={() => handleEditDayPlan(selectedDayPlan)}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2 cursor-pointer"
                 >
                   <LuPencil className="w-4 h-4" />
                   <span>Edit Plan</span>
@@ -1490,7 +1533,7 @@ const TraineeMainDashboard = () => {
               )}
               <button
                 onClick={() => setShowViewPopup(false)}
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 cursor-pointer"
               >
                 Close
               </button>

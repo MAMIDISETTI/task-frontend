@@ -25,6 +25,10 @@ const DayPlans = () => {
   const [expandedPlans, setExpandedPlans] = useState({});
   const [expandedTasks, setExpandedTasks] = useState({});
   const [processingPlans, setProcessingPlans] = useState({});
+  const [dateFilter, setDateFilter] = useState("");
+  const [filteredTraineeDayPlans, setFilteredTraineeDayPlans] = useState([]);
+  const [traineeCreatedDateFilter, setTraineeCreatedDateFilter] = useState("");
+  const [filteredTraineeCreatedPlans, setFilteredTraineeCreatedPlans] = useState([]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -88,6 +92,8 @@ const DayPlans = () => {
       }
       
       setTraineeDayPlans(res.data.dayPlans || []);
+      setFilteredTraineeDayPlans(res.data.dayPlans || []);
+      setFilteredTraineeCreatedPlans(res.data.dayPlans || []);
     } catch (error) {
      // console.error("Error fetching trainee day plans:", error);
       toast.error("Failed to fetch trainee day plans");
@@ -152,8 +158,8 @@ const DayPlans = () => {
       // Wait for all day plans to be created
       const results = await Promise.all(promises);
       
-      // Check if all were successful
-      const allSuccessful = results.every(res => res.data.success);
+      // Check if all were successful (status 200-299 means success)
+      const allSuccessful = results.every(res => res.status >= 200 && res.status < 300);
       
       if (allSuccessful) {
         toast.success(`Day plans created successfully for ${traineeFormData.selectedTrainees.length} trainee(s)`);
@@ -234,14 +240,28 @@ const DayPlans = () => {
         API_PATHS.TRAINEE_DAY_PLANS.REVIEW(planId);
       
       const response = await axiosInstance.put(endpoint, {
-        status: 'approved',
-        reviewComments: 'Approved by trainer'
+          status: 'approved',
+          reviewComments: 'Approved by trainer'
       });
 
       if (response.data.message) {
         toast.success('Day plan accepted successfully');
         // Update the local state immediately
         setTraineeDayPlans(prev => 
+          prev.map(plan => 
+            plan._id === planId 
+              ? { ...plan, status: 'completed' }
+              : plan
+          )
+        );
+        setFilteredTraineeDayPlans(prev => 
+          prev.map(plan => 
+            plan._id === planId 
+              ? { ...plan, status: 'completed' }
+              : plan
+          )
+        );
+        setFilteredTraineeCreatedPlans(prev => 
           prev.map(plan => 
             plan._id === planId 
               ? { ...plan, status: 'completed' }
@@ -276,14 +296,28 @@ const DayPlans = () => {
         API_PATHS.TRAINEE_DAY_PLANS.REVIEW(planId);
       
       const response = await axiosInstance.put(endpoint, {
-        status: 'rejected',
-        reviewComments: remarks
+          status: 'rejected',
+          reviewComments: remarks
       });
 
       if (response.data.message) {
         toast.success('Day plan rejected successfully');
         // Update the local state immediately
         setTraineeDayPlans(prev => 
+          prev.map(plan => 
+            plan._id === planId 
+              ? { ...plan, status: 'rejected' }
+              : plan
+          )
+        );
+        setFilteredTraineeDayPlans(prev => 
+          prev.map(plan => 
+            plan._id === planId 
+              ? { ...plan, status: 'rejected' }
+              : plan
+          )
+        );
+        setFilteredTraineeCreatedPlans(prev => 
           prev.map(plan => 
             plan._id === planId 
               ? { ...plan, status: 'rejected' }
@@ -499,6 +533,44 @@ const DayPlans = () => {
     resetForm();
   };
 
+  // Handle date filter
+  const handleDateFilter = (selectedDate) => {
+    setDateFilter(selectedDate);
+    if (selectedDate) {
+      const filtered = traineeDayPlans.filter(plan => 
+        moment(plan.date).format('YYYY-MM-DD') === selectedDate
+      );
+      setFilteredTraineeDayPlans(filtered);
+    } else {
+      setFilteredTraineeDayPlans(traineeDayPlans);
+    }
+  };
+
+  // Clear date filter
+  const clearDateFilter = () => {
+    setDateFilter("");
+    setFilteredTraineeDayPlans(traineeDayPlans);
+  };
+
+  // Handle trainee created date filter
+  const handleTraineeCreatedDateFilter = (selectedDate) => {
+    setTraineeCreatedDateFilter(selectedDate);
+    if (selectedDate) {
+      const filtered = traineeDayPlans.filter(plan => 
+        moment(plan.date).format('YYYY-MM-DD') === selectedDate
+      );
+      setFilteredTraineeCreatedPlans(filtered);
+    } else {
+      setFilteredTraineeCreatedPlans(traineeDayPlans);
+    }
+  };
+
+  // Clear trainee created date filter
+  const clearTraineeCreatedDateFilter = () => {
+    setTraineeCreatedDateFilter("");
+    setFilteredTraineeCreatedPlans(traineeDayPlans);
+  };
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -528,6 +600,7 @@ const DayPlans = () => {
 
   return (
     <DashboardLayout activeMenu="Day Plans">
+      <div className="space-y-5">
       <div className="card my-5">
         <h2 className="text-xl font-medium">Day Plans</h2>
       </div>
@@ -537,7 +610,7 @@ const DayPlans = () => {
         <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
           <button
             onClick={() => setActiveTab("trainee-created")}
-            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+              className={`cursor-pointer flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
               activeTab === "trainee-created"
                 ? "bg-white text-blue-600 shadow-sm"
                 : "text-gray-600 hover:text-gray-900"
@@ -547,7 +620,7 @@ const DayPlans = () => {
           </button>
           <button
             onClick={() => setActiveTab("trainee-plans")}
-            className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+              className={`cursor-pointer flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
               activeTab === "trainee-plans"
                 ? "bg-white text-blue-600 shadow-sm"
                 : "text-gray-600 hover:text-gray-900"
@@ -558,21 +631,58 @@ const DayPlans = () => {
         </div>
       </div>
 
-      {/* Trainee Created Day Plans Tab */}
-      {activeTab === "trainee-created" && (
+        {/* Trainee Created Day Plans Tab */}
+        {activeTab === "trainee-created" && (
         <div className="card my-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-medium">Trainee Created Day Plans</h3>
+          </div>
+
+          {/* Date Filter Section */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <label className="text-sm font-medium text-gray-700">Filter by Date:</label>
+                <input
+                  type="date"
+                  value={traineeCreatedDateFilter}
+                  onChange={(e) => handleTraineeCreatedDateFilter(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                {traineeCreatedDateFilter && (
+                  <button
+                    onClick={clearTraineeCreatedDateFilter}
+                    className="cursor-pointer px-3 py-2 text-sm text-gray-600 hover:text-gray-800 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    Clear Filter
+                  </button>
+                )}
               </div>
+              <div className="text-sm text-gray-600">
+                Showing {filteredTraineeCreatedPlans.length} of {traineeDayPlans.length} plans
+              </div>
+            </div>
+          </div>
               
-          {traineeDayPlans.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <LuFileText className="mx-auto text-4xl mb-2" />
-              <p>No trainee day plans submitted yet</p>
+          {filteredTraineeCreatedPlans.length === 0 ? (
+            <div className="text-center py-8">
+              <LuFileText className="mx-auto text-4xl text-gray-400 mb-2" />
+              <p className="text-gray-500">
+                {traineeCreatedDateFilter ? `No day plans found for ${moment(traineeCreatedDateFilter).format('MMM DD, YYYY')}` : 'No trainee day plans submitted yet'}
+              </p>
+              {traineeCreatedDateFilter && (
+                <button
+                  onClick={clearTraineeCreatedDateFilter}
+                  className="cursor-pointer mt-2 text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  Clear date filter
+                </button>
+              )}
             </div>
           ) : (
-            <div className="space-y-4">
-              {traineeDayPlans.map((plan) => (
+            <div className="max-h-96 overflow-y-auto">
+              <div className="space-y-4">
+                {filteredTraineeCreatedPlans.map((plan) => (
                 <div key={plan._id} className="border rounded-lg p-4">
                   {/* Day Plan Header */}
                   <div 
@@ -771,7 +881,7 @@ const DayPlans = () => {
                           <button
                             onClick={() => handleRejectPlanFromList(plan._id)}
                             disabled={processingPlans[plan._id]}
-                            className={`px-4 py-2 rounded text-sm transition-colors ${
+                            className={`px-4 cursor-pointer py-2 rounded text-sm transition-colors ${
                               processingPlans[plan._id] === 'rejecting'
                                 ? 'bg-gray-400 text-white cursor-not-allowed'
                                 : 'bg-red-600 text-white hover:bg-red-700'
@@ -782,7 +892,7 @@ const DayPlans = () => {
                           <button
                             onClick={() => handleAcceptPlanFromList(plan._id)}
                             disabled={processingPlans[plan._id]}
-                            className={`px-4 py-2 rounded text-sm transition-colors ${
+                            className={`px-4 py-2 cursor-pointer rounded text-sm transition-colors ${
                               processingPlans[plan._id] === 'accepting'
                                 ? 'bg-gray-400 text-white cursor-not-allowed'
                                 : 'bg-green-600 text-white hover:bg-green-700'
@@ -807,32 +917,72 @@ const DayPlans = () => {
                     </div>
                   )}
                 </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
+        </div>
+        )}
 
-              </div>
-      )}
-
-      {/* Assigned Trainees' Day Plans Tab */}
-      {activeTab === "trainee-plans" && (
+        {/* Assigned Trainees' Day Plans Tab */}
+        {activeTab === "trainee-plans" && (
         <div className="card my-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-medium">Assigned Trainees' Day Plans</h3>
-                <button
-              className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+            <button
+              className="cursor-pointer flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
               onClick={() => setShowTraineeCreateForm(true)}
-                >
+            >
               <LuPlus className="w-5 h-5" />
               <span>Create Trainee Day Plan</span>
-                </button>
+            </button>
+          </div>
+
+          {/* Date Filter Section */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <label className="text-sm font-medium text-gray-700">Filter by Date:</label>
+                <input
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) => handleDateFilter(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                {dateFilter && (
+                  <button
+                    onClick={clearDateFilter}
+                    className="cursor-pointer px-3 py-2 text-sm text-gray-600 hover:text-gray-800 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    Clear Filter
+                  </button>
+                )}
               </div>
+              <div className="text-sm text-gray-600">
+                Showing {filteredTraineeDayPlans.length} of {traineeDayPlans.length} plans
+              </div>
+            </div>
+          </div>
               
-          {traineeDayPlans.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">No trainee day plans created yet.</p>
+          {filteredTraineeDayPlans.length === 0 ? (
+            <div className="text-center py-8">
+              <LuFileText className="mx-auto text-4xl text-gray-400 mb-2" />
+              <p className="text-gray-500">
+                {dateFilter ? `No day plans found for ${moment(dateFilter).format('MMM DD, YYYY')}` : 'No trainee day plans created yet.'}
+              </p>
+              {dateFilter && (
+                <button
+                  onClick={clearDateFilter}
+                  className="cursor-pointer mt-2 text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  Clear date filter
+                </button>
+              )}
+            </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {traineeDayPlans.map((plan) => (
+            <div className="max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {filteredTraineeDayPlans.map((plan) => (
                 <div key={plan._id} className="border rounded-md p-4 hover:shadow-md transition-shadow">
                   <div className="flex flex-col h-full">
                     <div className="flex-1">
@@ -849,7 +999,7 @@ const DayPlans = () => {
                         }`}>
                           {plan.status}
                         </span>
-                  </div>
+                      </div>
                       <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                         {plan.trainee?.email || 'No email'}
                       </p>
@@ -857,12 +1007,12 @@ const DayPlans = () => {
                         <div className="flex items-center mb-1">
                           <LuCalendar className="w-3 h-3 mr-1" />
                           {moment(plan.date).format('MMM DD, YYYY')}
-                </div>
+                        </div>
                         <div className="flex items-center">
                           <LuFileText className="w-3 h-3 mr-1" />
                           Created by: {plan.createdBy === 'trainer' ? 'Trainer' : 'Trainee'}
-            </div>
-            </div>
+                        </div>
+                      </div>
                     </div>
                     <div className="flex items-center justify-between pt-3 border-t">
                       <div className="text-xs text-gray-500">
@@ -878,28 +1028,46 @@ const DayPlans = () => {
                           title="View Details"
                         >
                           <LuEye className="w-4 h-4" />
-              </button>
-              <button 
+                        </button>
+                        <button 
                           onClick={() => handleTraineeDelete(plan._id)}
                           className="p-1 text-gray-400 hover:text-red-600"
                           title="Delete"
                         >
                           <LuTrash className="w-4 h-4" />
-              </button>
-            </div>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              ))}
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+        )}
 
-      {/* Create Trainee Day Plan Form */}
-      {showTraineeCreateForm && (
-            <div className="mt-5 p-4 border rounded-lg bg-gray-50">
-              <h4 className="text-lg font-medium mb-4">Create Trainee Day Plan</h4>
-          
-          <form onSubmit={handleTraineeSubmit} className="space-y-4">
+        {/* Create Trainee Day Plan Modal */}
+        {showTraineeCreateForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h3 className="text-xl font-semibold text-gray-900">Create Trainee Day Plan</h3>
+              <button
+                onClick={() => {
+                  setShowTraineeCreateForm(false);
+                  resetTraineeForm();
+                }}
+                className="cursor-pointer text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <form onSubmit={handleTraineeSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Title *</label>
@@ -964,7 +1132,7 @@ const DayPlans = () => {
                 <button
                   type="button"
                       onClick={addTraineeTask}
-                      className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
+                      className="cursor-pointer text-blue-600 hover:text-blue-800 text-sm flex items-center"
                 >
                       <LuPlus className="w-4 h-4 mr-1" />
                       Add Task
@@ -983,7 +1151,7 @@ const DayPlans = () => {
                         <button
                           type="button"
                         onClick={() => removeTraineeTask(index)}
-                        className="text-red-600 hover:text-red-800 p-2"
+                        className="text-red-600 hover:text-red-800 p-2 cursor-pointer"
                         >
                         <LuTrash className="w-4 h-4" />
                         </button>
@@ -999,7 +1167,7 @@ const DayPlans = () => {
                       setShowTraineeSelector(true);
                       setTraineeSearchTerm("");
                     }}
-                    className="w-full p-2 border rounded-md text-left bg-gray-50 hover:bg-gray-100"
+                    className="cursor-pointer w-full p-2 border rounded-md text-left bg-gray-50 hover:bg-gray-100"
                   >
                     {traineeFormData.selectedTrainees.length === 0 
                       ? "Select trainees..." 
@@ -1023,7 +1191,7 @@ const DayPlans = () => {
                     <button
                       type="button"
                                 onClick={() => removeTrainee(traineeId)}
-                                className="text-red-600 hover:text-red-800 p-1"
+                                className="cursor-pointer text-red-600 hover:text-red-800 p-1"
                                 title="Remove trainee"
                     >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1048,27 +1216,27 @@ const DayPlans = () => {
               />
             </div>
 
-                <div className="flex justify-end space-x-3">
+                <div className="flex items-center justify-end space-x-3 pt-6 border-t">
               <button 
                 type="button" 
                     onClick={() => {
                       setShowTraineeCreateForm(false);
                       resetTraineeForm();
                     }}
-                    className="flex items-center justify-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+                    className="cursor-pointer flex items-center justify-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors font-medium"
                   >
                     <span>Cancel</span>
                   </button>
                   <button 
                     type="submit" 
-                    className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-colors font-medium"
+                    className="flex cursor-pointer items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-medium"
                   >
                     <span>Create Trainee Day Plan</span>
               </button>
             </div>
           </form>
             </div>
-          )}
+          </div>
         </div>
       )}
 
@@ -1403,6 +1571,7 @@ const DayPlans = () => {
                           </div>
         </div>
       )}
+      </div>
     </DashboardLayout>
   );
 };

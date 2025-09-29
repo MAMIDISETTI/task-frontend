@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import DashboardLayout from '../../components/layouts/DashboardLayout';
-import { LuUsers, LuUserPlus, LuFileSpreadsheet, LuTrendingUp, LuSettings, LuSearch, LuBell, LuClock, LuCalendar, LuX, LuSave, LuUser, LuMail, LuPhone, LuBuilding, LuCalendar as LuCalendarIcon, LuUpload, LuInfo, LuGraduationCap } from 'react-icons/lu';
+import { LuUsers, LuUserPlus, LuFileSpreadsheet, LuTrendingUp, LuSettings, LuSearch, LuBell, LuClock, LuCalendar, LuX, LuSave, LuUser, LuMail, LuPhone, LuBuilding, LuCalendar as LuCalendarIcon, LuUpload, LuInfo, LuGraduationCap, LuLoader } from 'react-icons/lu';
 import { UserContext } from '../../context/userContext';
 import moment from 'moment';
 import { toast } from 'react-hot-toast';
@@ -626,10 +626,10 @@ const BOADashboard = () => {
           {/* Search Bar */}
           <div className="mt-4 md:mt-0">
             <div className="relative">
-              <LuSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <LuSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search recent joiners by name, email, or department..."
+                placeholder="Search by name, email, or department..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full md:w-80 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -1396,7 +1396,15 @@ const BOADashboard = () => {
             {/* Joiners List */}
             <div className="flex-1 overflow-y-auto scrollbar-thin" style={{ minHeight: 0 }}>
               <div className="p-4">
-              {allJoiners
+              {loading ? (
+                <div className="text-center py-12">
+                  <div className="p-4 bg-gray-100 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                    <LuLoader className="w-10 h-10 text-blue-500 animate-spin" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Loading Joiners...</h3>
+                  <p className="text-gray-500 text-sm max-w-md mx-auto">Please wait while we fetch the joiner data.</p>
+                </div>
+              ) : allJoiners
                 .filter(joiner => 
                   joiner.name.toLowerCase().includes(joinersSearchTerm.toLowerCase()) ||
                   joiner.email.toLowerCase().includes(joinersSearchTerm.toLowerCase()) ||
@@ -1457,7 +1465,7 @@ const BOADashboard = () => {
                   </div>
                 ))}
               
-              {allJoiners.length === 0 && (
+              {!loading && allJoiners.length === 0 && (
                 <div className="text-center py-8">
                   <LuUserPlus className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500">

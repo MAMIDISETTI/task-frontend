@@ -33,7 +33,7 @@ const MasterTrainerDayPlans = () => {
   // Fetch trainee day plan statistics
   const getTraineeStats = async () => {
     try {
-      const res = await axiosInstance.get(API_PATHS.DAY_PLANS.GET_ALL, {
+      const res = await axiosInstance.get(API_PATHS.TRAINEE_DAY_PLANS.GET_ALL, {
         params: { 
           role: 'master_trainer',
           stats: true 
@@ -87,52 +87,24 @@ const MasterTrainerDayPlans = () => {
   // Fetch date-filtered statistics
   const getDateFilterStats = async (date) => {
     try {
-      const res = await axiosInstance.get(API_PATHS.DAY_PLANS.GET_ALL, {
+      // First get the details for the specific date
+      const res = await axiosInstance.get(API_PATHS.TRAINEE_DAY_PLANS.GET_ALL, {
         params: { 
-          role: 'trainee',
-          stats: true,
+          role: 'master_trainer',
+          details: true,
           date: date
         }
       });
       
       const data = res.data;
-      // Use real data if available, otherwise show mock data for demonstration
-      if (data.totalPlans !== undefined) {
+      if (data.success && data.dayPlans) {
+        // Calculate statistics from the actual day plans for this date
+        const dayPlans = data.dayPlans;
         setDateFilterStats({
-          totalPlans: data.totalPlans || 0,        // All plans for date
-          published: data.published || 0,          // Published plans for date
-          completed: data.completed || 0,          // Completed plans for date
-          draft: data.draft || 0                   // Draft plans for date
-        });
-      } else {
-        // Mock data to demonstrate the workflow - remove when backend is ready
-        const today = new Date().toISOString().split('T')[0];
-        if (selectedDate === today) {
-          setDateFilterStats({
-            totalPlans: 1,        // Priya's plan for today
-            published: 1,         // Priya's approved plan
-            completed: 0,         // No EOD approved yet
-            draft: 0              // No draft plans
-          });
-        } else {
-          setDateFilterStats({
-            totalPlans: 0,
-            published: 0,
-            completed: 0,
-            draft: 0
-          });
-        }
-      }
-    } catch (err) {
-      console.error("Error fetching date-filtered stats:", err);
-      // Mock data to demonstrate the workflow - remove when backend is ready
-      const today = new Date().toISOString().split('T')[0];
-      if (selectedDate === today) {
-        setDateFilterStats({
-          totalPlans: 1,        // Priya's plan for today
-          published: 1,         // Priya's approved plan
-          completed: 0,         // No EOD approved yet
-          draft: 0              // No draft plans
+          totalPlans: dayPlans.length,
+          published: dayPlans.filter(plan => plan.status === 'completed').length, // Changed from 'approved' to 'completed'
+          completed: dayPlans.filter(plan => plan.status === 'completed').length,
+          draft: dayPlans.filter(plan => plan.status === 'draft').length
         });
       } else {
         setDateFilterStats({
@@ -142,6 +114,14 @@ const MasterTrainerDayPlans = () => {
           draft: 0
         });
       }
+    } catch (err) {
+      console.error("Error fetching date-filtered stats:", err);
+      setDateFilterStats({
+        totalPlans: 0,
+        published: 0,
+        completed: 0,
+        draft: 0
+      });
     }
   };
 
@@ -156,9 +136,9 @@ const MasterTrainerDayPlans = () => {
   // Fetch day plan details for the selected date
   const fetchDayPlanDetails = async (date) => {
     try {
-      const res = await axiosInstance.get(API_PATHS.DAY_PLANS.GET_ALL, {
+      const res = await axiosInstance.get(API_PATHS.TRAINEE_DAY_PLANS.GET_ALL, {
         params: { 
-          role: 'trainee',
+          role: 'master_trainer',
           date: date,
           details: true
         }

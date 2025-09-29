@@ -93,7 +93,7 @@ const UploadResults = () => {
                 <button
                   key={key}
                   onClick={() => setActiveTab(key)}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  className={`cursor-pointer py-2 px-1 border-b-2 font-medium text-sm ${
                     activeTab === key
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -115,7 +115,7 @@ const UploadResults = () => {
             </div>
             <button
               onClick={() => setShowGoogleSheetsUpload(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
+              className="cursor-pointer flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
             >
               <LuCloudUpload className="w-4 h-4" />
               <span>Upload from Google Sheets</span>
@@ -224,21 +224,21 @@ const UploadResults = () => {
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handleDownload(result._id || result.id)}
-                            className="text-blue-600 hover:text-blue-800"
+                            className="cursor-pointer text-blue-600 hover:text-blue-800"
                             title="Download"
                           >
                             <LuDownload className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleEdit(result._id || result.id)}
-                            className="text-green-600 hover:text-green-800"
+                            className="cursor-pointer text-green-600 hover:text-green-800"
                             title="Edit"
                           >
                             <LuPencil className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(result._id || result.id)}
-                            className="text-red-600 hover:text-red-800"
+                            className="cursor-pointer text-red-600 hover:text-red-800"
                             title="Delete"
                           >
                             <LuTrash2 className="w-4 h-4" />
